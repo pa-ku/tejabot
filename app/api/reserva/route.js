@@ -11,17 +11,20 @@ import { confirmAlert } from '@/utils/confirmAlert'
 /*   headless: false,
       slowMo: 10, */
 
-export async function POST(req) {
+const LOCAL_CHROME_EXECUTABLE =
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
+export default async function POST(req) {
+  const executablePath =
+    (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE
   let browser
   try {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
     browser = await puppeteer.launch({
+      executablePath,
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+      headless: false,
     })
 
     const page = await browser.newPage()
