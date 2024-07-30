@@ -8,12 +8,11 @@ export async function POST(req) {
   try {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
-
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
-      headless: true,
+      headless: chromium.headless,
       ignoreHTTPSErrors: true,
     })
 
