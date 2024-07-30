@@ -11,14 +11,14 @@ export default function ReservaButton() {
   const [diaReserva, setDiaReserva] = useState(1)
   const [userReserva, setUserReserva] = useState({
     email: 'p4blo.kuhn@gmail.com',
-    password: 'Pemk3839',
+    password: 'tejadito123',
     invitado: '12575504',
   })
 
   const cuentas = [
     {
       email: 'p4blo.kuhn@gmail.com',
-      password: 'Pemk3839',
+      password: 'tejadito123',
       invitado: '12575504',
     },
     {
@@ -100,45 +100,47 @@ export default function ReservaButton() {
       </section>
       <section className='flex items-center flex-col justify-center gap-4'>
         <h2>Cancha</h2>
-        <div className='h-10'>
-          <input
-            id='cancha1'
-            className='peer appearance-none'
-            onClick={(e) => setCanchaReserva(e.target.value)}
-            value={1}
-            name='cancha'
-            type='radio'
-            defaultChecked
-          />
-          <label
-            htmlFor='cancha1'
-            className='peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-400 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
-          >
-            Cancha 1
-          </label>
-        </div>
-        <div className='h-10'>
-          <input
-            id='cancha2'
-            className='peer appearance-none'
-            onClick={(e) => setCanchaReserva(e.target.value)}
-            value={2}
-            name='cancha'
-            type='radio'
-          />
-          <label
-            htmlFor='cancha2'
-            className='peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-500 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
-          >
-            Cancha 2
-          </label>
+        <div className='flex gap-5'>
+          <div className='h-10'>
+            <input
+              id='cancha1'
+              className='peer appearance-none'
+              onClick={(e) => setCanchaReserva(e.target.value)}
+              value={1}
+              name='cancha'
+              type='radio'
+              defaultChecked
+            />
+            <label
+              htmlFor='cancha1'
+              className=' peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-400 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+            >
+              Cancha 1
+            </label>
+          </div>
+          <div className='h-10'>
+            <input
+              id='cancha2'
+              className='peer appearance-none'
+              onClick={(e) => setCanchaReserva(e.target.value)}
+              value={2}
+              name='cancha'
+              type='radio'
+            />
+            <label
+              htmlFor='cancha2'
+              className='peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-500 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+            >
+              Cancha 2
+            </label>
+          </div>
         </div>
       </section>
 
-      <section className='flex flex-col items-center justify-center'>
+      <section className='flex w-full flex-col items-center justify-center'>
         <h2>Dia</h2>
         <select
-          className='py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className='py-3 w-full bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
           onChange={(e) => setDiaReserva(e.target.value)}
           name=''
           id=''
@@ -153,10 +155,10 @@ export default function ReservaButton() {
         </select>
       </section>
 
-      <section className='flex flex-col items-center justify-center'>
+      <section className='w-full flex flex-col items-center justify-center'>
         <h2>Horario</h2>
         <select
-          className='py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className='py-3 w-full bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
           onChange={(e) => setHoraReserva(e.target.value)}
           name=''
           id=''
