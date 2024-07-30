@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/*": {
+    "api/reserva/*": {
       "maxDuration": 60
     }
   }
