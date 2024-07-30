@@ -106,7 +106,7 @@ export async function POST(req) {
       await page.click('button[id="btn-id-persona"]')
       await page.click('button[id="btn-id-reserva"]')
       await new Promise((r) => setTimeout(r, 1500))
-      await page.screenshot({ path: `reserva.png` })
+      /*  await page.screenshot({ path: `reserva.png` }) */
 
       if (await page.type('button[class="confirm"]')) {
         throw new Error('Ya sacaste turno con esta ip')
