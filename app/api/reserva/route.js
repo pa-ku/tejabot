@@ -8,7 +8,8 @@ export async function POST(req) {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
     browser = await puppeteer.launch({
-      headless: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true, // Vercel no necesita modo headless, pero es bueno mantenerlo
       slowMo: 10,
     })
 
