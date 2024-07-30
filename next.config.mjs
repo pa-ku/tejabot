@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack(config) {
-    config.module.rules.forEach((rule) => {
-      if (rule.test && rule.use && !Array.isArray(rule.use)) {
-        console.warn(`Expected array for rule.use but got: `, rule.use)
-      }
-    })
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.module.rules.push({
+        test: /\.map$/,
+        use: 'ignore-loader',
+      })
+    }
+
     return config
   },
 }
