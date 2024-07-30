@@ -1,6 +1,15 @@
 import puppeteer from 'puppeteer-core'
-import chromium from 'chrome-aws-lambda'
+import chromium from 'chrome-aws-lambda' 
 import { confirmAlert } from '@/utils/confirmAlert'
+
+/*     args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true, */
+
+/*   headless: false,
+      slowMo: 10, */
 
 // Función para manejar el método POST
 export async function POST(req) {
@@ -13,7 +22,7 @@ export async function POST(req) {
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+      ignoreHTTPSErrors: true, 
     })
 
     const page = await browser.newPage()
@@ -100,14 +109,23 @@ export async function POST(req) {
     try {
       await page.click('input[id="input-dni"]')
       await page.type('input[id="input-dni"]', dni)
-      await page.click('button[id="btn-id-persona"]')
-      await page.screenshot({ path: `reserva.png` })
-      await page.waitForTimeout(1500)
-      await page.click('button[id="btn-id-reserva"]')
-      await page.screenshot({ path: `reserva.png` })
+      await new Promise((r) => setTimeout(r, 1500))
     } catch (error) {
       console.error('Error al completar el formulario de reserva:', error)
       throw new Error('No se pudo completar el formulario de reserva')
+    }
+    try {
+      await page.click('button[id="btn-id-persona"]')
+      await page.click('button[id="btn-id-reserva"]')
+      await new Promise((r) => setTimeout(r, 1500))
+      await page.screenshot({ path: `reserva.png` })
+
+      if (await page.type('button[class="confirm"]')) {
+        throw new Error('Ya sacaste turno con esta ip')
+      }
+    } catch (err) {
+      console.error('Ya sacaste turno con esta ip:', err)
+      throw new Error('Ya sacaste turno con esta ip')
     }
 
     return new Response(

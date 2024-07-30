@@ -14,6 +14,10 @@ export default function ReservaButton() {
     password: 'tejadito123',
     invitado: '12575504',
   })
+  const [timer, setTimer] = useState(false)
+
+  const [horas, setHoras] = useState(7)
+  const [minutos, setMinutos] = useState(0)
 
   const cuentas = [
     {
@@ -73,8 +77,12 @@ export default function ReservaButton() {
 
       <section className='flex w-full flex-col items-center justify-center'>
         <h2>Usuario</h2>
+        <p className='description text-start w-full mb-2'>
+          La contraseña del usuario ya se aplicara automaticamente, asi como el
+          DNI de la "persona invitada"
+        </p>
         <select
-          className=' w-full py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className=' hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
           onClick={(e) =>
             setUserReserva({
               email: e.target.options[e.target.selectedIndex].dataset.email,
@@ -104,7 +112,7 @@ export default function ReservaButton() {
           <div>
             <input
               id='cancha1'
-              className='peer appearance-none'
+              className='text-violet-200 peer appearance-none'
               onClick={(e) => setCanchaReserva(e.target.value)}
               value={1}
               name='cancha'
@@ -113,9 +121,9 @@ export default function ReservaButton() {
             />
             <label
               htmlFor='cancha1'
-              className=' peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-400 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+              className=' hover:brightness-110 peer-checked:text-[#ffe0f1] text-[#e0218c] peer-checked:bg-[#e0218c]  border-2 font-bold border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
             >
-              Cancha 1
+              Cancha I
             </label>
           </div>
           <div>
@@ -129,18 +137,18 @@ export default function ReservaButton() {
             />
             <label
               htmlFor='cancha2'
-              className='peer-checked:text-yellow-200 peer-checked:bg-yellow-950 border border-yellow-500 text-yellow-500 rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+              className=' hover:brightness-110 peer-checked:text-[#ffe0f1]  border-2 font-bold text-[#e0218c] peer-checked:bg-[#e0218c]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
             >
-              Cancha 2
+              Cancha II
             </label>
           </div>
         </div>
       </section>
 
       <section className='flex w-full flex-col items-center justify-center'>
-        <h2>Dia</h2>
+        <h2>Día</h2>
         <select
-          className='py-3 w-full bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className=' hover:brightness-110 py-3 w-full  text-violet-200 bg-violet-950 border border-violet-500 p-2 rounded-xl cursor-pointer'
           onChange={(e) => setDiaReserva(e.target.value)}
           name=''
           id=''
@@ -157,8 +165,11 @@ export default function ReservaButton() {
 
       <section className='w-full flex flex-col items-center justify-center'>
         <h2>Horario</h2>
+        <p className='description text-start w-full mb-2'>
+          Si el horario ya fue tomado no se terminara de reservar la cancha
+        </p>
         <select
-          className='py-3 w-full bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className=' hover:brightness-110 py-3 w-full text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
           onChange={(e) => setHoraReserva(e.target.value)}
           name=''
           id=''
@@ -176,6 +187,50 @@ export default function ReservaButton() {
           <option value='18:00 - 19:00'>18 - 19</option>
           <option value='19:00 - 20:00'>19 - 20</option>
         </select>
+      </section>
+
+      <section className='flex flex-col '>
+        <h2>Timer</h2>
+        <p className='description'>
+          Ejecutara el codigo a la hora especificada, si se desactiva se
+          ejecutara inmediatamente
+        </p>
+
+        <div className='h-16 flex items-center gap-3'>
+          <input
+            type='checkbox'
+            onChange={() => setTimer(!timer)}
+            className='relative flex h-6 w-12
+  cursor-pointer appearance-none items-center rounded-xl
+  bg-white duration-200 before:pointer-events-none 
+  before:absolute before:h-4 before:w-4 before:translate-x-1
+  before:rounded-xl before:bg-violet-500 
+  before:duration-200 checked:bg-violet-500 
+  checked:shadow-center checked:shadow-violet-700 
+  checked:before:translate-x-7 checked:before:bg-white'
+          />
+
+          {timer && (
+            <>
+              <input
+                className='text-center hover:brightness-110 w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
+                type='number'
+                placeholder='Hr'
+                value={horas}
+                title='horas'
+                onChange={(e) => setHoras(e.target.value)}
+              />
+              <input
+                className='text-center hover:brightness-110  w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
+                type='number'
+                value={minutos}
+                title='minutos'
+                onChange={(e) => setMinutos(e.target.value)}
+                placeholder='Min'
+              />
+            </>
+          )}
+        </div>
       </section>
 
       <button
