@@ -16,8 +16,6 @@
     "ts-loader": "9.5.1"
   },
   "devDependencies": {
-    "puppeteer-core": "10.1.0",
-    "chrome-aws-lambda": "10.1.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "ignore-loader": "^0.1.2",

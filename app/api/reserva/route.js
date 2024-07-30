@@ -2,16 +2,7 @@ import puppeteer from 'puppeteer'
 
 import { confirmAlert } from '@/utils/confirmAlert'
 
-/*     args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true, */
-
-/*   headless: false,
-      slowMo: 10, */
-
-export default async function POST(req) {
+export async function POST(req) {
   let browser
   try {
     // Obtén los datos del cuerpo de la solicitud
