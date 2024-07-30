@@ -79,10 +79,10 @@ export default function ReservaButton() {
         <h2>Usuario</h2>
         <p className='description text-start w-full mb-2'>
           La contraseña del usuario se aplica automaticamente, el DNI de la
-          "persona invitada" también
+          persona invitada también
         </p>
         <select
-          className=' hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
+          className=' hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
           onClick={(e) =>
             setUserReserva({
               email: e.target.options[e.target.selectedIndex].dataset.email,
