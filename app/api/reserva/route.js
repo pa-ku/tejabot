@@ -3,6 +3,7 @@ import chromium from '@sparticuz/chromium'
 import { confirmAlert } from '@/utils/confirmAlert'
 
 export async function POST(req) {
+  console.log('Starting Reservation')
   let browser
   try {
     // Obtén los datos del cuerpo de la solicitud
