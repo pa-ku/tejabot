@@ -1,11 +1,11 @@
 module.exports = {
     webpack: (config, { isServer }) => {
-      if (!isServer) {
-        config.module.rules.push({
-          test: /\.js\.map$/,
-          use: 'ignore-loader'
-        });
-      }
+      config.module.rules.push({
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      });
+  
       return config;
-    }
+    },
   }
