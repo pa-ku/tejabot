@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-
-import reservaImg from '../reserva.png'
 import Title from './Title'
 
 export default function ReservaButton() {

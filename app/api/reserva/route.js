@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
 import { confirmAlert } from '@/utils/confirmAlert'
 
 // Función para manejar el método POST
