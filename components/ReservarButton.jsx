@@ -10,9 +10,9 @@ export default function ReservaButton() {
   const [canchaReserva, setCanchaReserva] = useState(1)
   const [diaReserva, setDiaReserva] = useState(1)
   const [userReserva, setUserReserva] = useState({
-    email: 'p4blo.kuhn@gmail.com',
-    password: 'tejadito123',
-    invitado: '12575504',
+    email: '',
+    password: '',
+    invitado: '',
   })
   const [timer, setTimer] = useState(false)
 
@@ -20,6 +20,11 @@ export default function ReservaButton() {
   const [minutos, setMinutos] = useState(0)
 
   const cuentas = [
+    {
+      email: '',
+      password: '',
+      invitado: '',
+    },
     {
       email: 'p4blo.kuhn@gmail.com',
       password: 'tejadito123',
@@ -75,14 +80,14 @@ export default function ReservaButton() {
     <main className='w-80 flex items-start flex-col gap-5'>
       <Title></Title>
 
-      <section className='flex w-full flex-col items-center justify-center'>
+      <section className='flex w-full flex-col items-center gap-2 justify-center'>
         <h2>Usuario</h2>
         <p className='description text-start w-full mb-2'>
           La contraseña del usuario se aplica automaticamente, el DNI de la
           persona invitada también
         </p>
         <select
-          className=' hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
+          className='hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
           onClick={(e) =>
             setUserReserva({
               email: e.target.options[e.target.selectedIndex].dataset.email,
@@ -105,6 +110,42 @@ export default function ReservaButton() {
             </>
           ))}
         </select>
+        <input
+          type='text'
+          placeholder='email'
+          value={userReserva.email}
+          onChange={(e) =>
+            setUserReserva({
+              ...userReserva,
+              email: e.target.value,
+            })
+          }
+          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+        />
+        <input
+          type='text'
+          placeholder='Password'
+          value={userReserva.password}
+          onChange={(e) =>
+            setUserReserva({
+              ...userReserva,
+              password: e.target.value,
+            })
+          }
+          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+        />
+        <input
+          type='text'
+          value={userReserva.invitado}
+          onChange={(e) =>
+            setUserReserva({
+              ...userReserva,
+              invitado: e.target.value,
+            })
+          }
+          placeholder='Dni Del Invitado'
+          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+        />
       </section>
       <section className='flex w-full items-center flex-col justify-center gap-4'>
         <h2>Cancha</h2>
