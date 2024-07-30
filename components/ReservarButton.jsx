@@ -68,7 +68,7 @@ export default function ReservaButton() {
   }
 
   return (
-    <div className=' flex items-start flex-col gap-5'>
+    <main className='w-80 flex items-start flex-col gap-5'>
       <Title></Title>
 
       <section className='flex w-full flex-col items-center justify-center'>
@@ -98,10 +98,10 @@ export default function ReservaButton() {
           ))}
         </select>
       </section>
-      <section className='flex items-center flex-col justify-center gap-4'>
+      <section className='flex w-full items-center flex-col justify-center gap-4'>
         <h2>Cancha</h2>
-        <div className='flex gap-5'>
-          <div className='h-10'>
+        <div className='w-full items-center justify-center flex gap-4'>
+          <div>
             <input
               id='cancha1'
               className='peer appearance-none'
@@ -118,7 +118,7 @@ export default function ReservaButton() {
               Cancha 1
             </label>
           </div>
-          <div className='h-10'>
+          <div>
             <input
               id='cancha2'
               className='peer appearance-none'
@@ -185,7 +185,13 @@ export default function ReservaButton() {
       >
         {loading ? 'Reservando...' : 'Reservar'}
       </button>
-      {message && <p className='text-red-200'>{message}</p>}
-    </div>
+
+      {message && (
+        <div className=' text-red-200 border-red-200 rounded-xl flex bg-red-950 break-words  border p-2 w-full'>
+          {' '}
+          <p className='break-all text-bold '>{message}</p>
+        </div>
+      )}
+    </main>
   )
 }

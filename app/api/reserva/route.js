@@ -1,69 +1,113 @@
 import puppeteer from 'puppeteer-core'
 import { confirmAlert } from '@/utils/confirmAlert'
-
+import { executablePath } from 'puppeteer'
 // Función para manejar el método POST
 export async function POST(req) {
+  let browser
   try {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
 
-    const browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 10,
+    browser = await puppeteer.launch({
+      headless: true,
+      slowMo: 20,
+      executablePath: executablePath(),
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     const page = await browser.newPage()
     await confirmAlert(page)
-    await page.goto('https://reservar.serviciosmerlo.online/login')
+
+    try {
+      await page.goto('https://reservar.serviciosmerlo.online/login')
+    } catch (error) {
+      console.error('Error al cargar la página de inicio de sesión:', error)
+      throw new Error('No se pudo acceder a la página de inicio de sesión')
+    }
 
     // Completa el formulario de inicio de sesión
-    await page.type('input[id="inputEmail"]', email)
-    await page.type('input[id="inputPassword"]', password)
-    await page.click('button[class="btn btn-primary block full-width m-b"]')
+    try {
+      await page.type('input[id="inputEmail"]', email)
+      await page.type('input[id="inputPassword"]', password)
+      await page.click('button[class="btn btn-primary block full-width m-b"]')
+    } catch (error) {
+      console.error(
+        'Error al completar el formulario de inicio de sesión:',
+        error
+      )
+      throw new Error('No se pudo completar el formulario de inicio de sesión')
+    }
 
     // Navega a las reservas
-    await page.waitForSelector('a[href="#"]')
-    await page.click('a[href="#"]')
-    await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
+    try {
+      await page.waitForSelector('a[href="#"]', { timeout: 5000 })
+      await page.click('a[href="#"]')
+      await page.waitForSelector(
+        '#side-menu > li:nth-child(4) > ul > li:first-child > a',
+        { timeout: 5000 }
+      )
+      await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
+    } catch (error) {
+      console.error('Error al navegar a la sección de reservas:', error)
+      throw new Error('No se pudo navegar a la sección de reservas')
+    }
 
     // Selecciona el día
-    const daySelector = `#li-dia-${dia} a`
-    await page.waitForSelector(daySelector)
-    await page.click(daySelector)
+    try {
+      const daySelector = `#li-dia-${dia} a`
+      await page.waitForSelector(daySelector, { timeout: 5000 })
+      await page.click(daySelector)
+    } catch (error) {
+      console.error('Error al seleccionar el día:', error)
+      throw new Error('No se pudo seleccionar el día especificado')
+    }
 
     // Selecciona el horario
-    const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-    await page.waitForSelector(horarioSelector)
+    try {
+      const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
+      await page.waitForSelector(horarioSelector, { timeout: 5000 })
 
-    const listaHorarios = await page.$$(horarioSelector + ' > li')
+      const listaHorarios = await page.$$(horarioSelector + ' > li')
 
-    for (let item of listaHorarios) {
-      const text = await page.evaluate((el) => el.textContent, item)
+      let horarioEncontrado = false
+      for (let item of listaHorarios) {
+        const text = await page.evaluate((el) => el.textContent, item)
 
-      if (text.includes(hora)) {
-        const aTag = await item.$('a.alert-link')
-        if (aTag) {
-          await aTag.click()
-          break
+        if (text.includes(hora)) {
+          const aTag = await item.$('a.alert-link')
+          if (aTag) {
+            await aTag.click()
+            horarioEncontrado = true
+            break
+          }
         }
       }
+
+      if (!horarioEncontrado) {
+        throw new Error('Horario no disponible')
+      }
+    } catch (error) {
+      console.error('Error al seleccionar el horario:', error)
+      throw new Error('No se pudo seleccionar el horario especificado')
     }
 
     // Completa el formulario de reserva
-    await page.click('input[id="input-dni"]')
-    await page.type('input[id="input-dni"]', dni)
 
-    await page.click('button[id="btn-id-persona"]')
-    await page.click('button[id="btn-id-reserva"]')
+    try {
+    } catch (error) {}
 
-    await new Promise((r) => setTimeout(r, 1500))
-    await page.click('button[id="btn-id-persona"]')
-    await page.click('button[id="btn-id-reserva"]')
-    await new Promise((r) => setTimeout(r, 1000))
-
-    await page.screenshot({ path: `reserva.png` })
-    await browser.close()
+    try {
+      await page.click('input[id="input-dni"]')
+      await page.type('input[id="input-dni"]', dni)
+      await page.click('button[id="btn-id-persona"]')
+      await page.screenshot({ path: `reserva.png` })
+      await page.waitForTimeout(1500)
+      await page.click('button[id="btn-id-reserva"]')
+      await page.screenshot({ path: `reserva.png` })
+    } catch (error) {
+      console.error('Error al completar el formulario de reserva:', error)
+      throw new Error('No se pudo completar el formulario de reserva')
+    }
 
     return new Response(
       JSON.stringify({ message: 'Reserva realizada con éxito' }),
@@ -75,9 +119,11 @@ export async function POST(req) {
       }
     )
   } catch (error) {
-    console.error('Error al realizar la reserva:', error)
+    console.error('Error al realizar la reserva:', error.message)
     return new Response(
-      JSON.stringify({ message: 'Error al realizar la reserva' }),
+      JSON.stringify({
+        message: error.message || 'Error al realizar la reserva',
+      }),
       {
         status: 500,
         headers: {
@@ -85,5 +131,9 @@ export async function POST(req) {
         },
       }
     )
+  } finally {
+    if (browser) {
+      await browser.close()
+    }
   }
 }
