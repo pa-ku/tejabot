@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-core'
 import chromium from 'chrome-aws-lambda'
 import { confirmAlert } from '@/utils/confirmAlert'
-import { executablePath } from 'puppeteer'
+
 // Función para manejar el método POST
 export async function POST(req) {
   let browser
@@ -14,7 +14,7 @@ export async function POST(req) {
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
       headless: true,
-      slowMo: 20,
+      ignoreHTTPSErrors: true,
     })
 
     const page = await browser.newPage()
