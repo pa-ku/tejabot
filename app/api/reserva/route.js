@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer'
-
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 import { confirmAlert } from '@/utils/confirmAlert'
 
 export async function POST(req) {
@@ -8,9 +8,11 @@ export async function POST(req) {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
     browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true, // Vercel no necesita modo headless, pero es bueno mantenerlo
-      slowMo: 10,
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      slowMo: 20,
     })
 
     const page = await browser.newPage()
