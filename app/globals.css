@@ -96,3 +96,34 @@ body {
     rotate: 360deg;
   }
 }
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid rgb(221, 255, 188);
+  border-top-color: #333;
+  border-bottom-color: #333;
+  animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    border: 5px solid #e0218c;
+    border-top-color: #333;
+    border-left-color: #333;
+  }
+
+  50% {
+    border: 5px solid #eaa221;
+    border-top-color: #333;
+    border-left-color: #333;
+  }
+
+  to {
+    rotate: 360deg;
+    border: 5px solid #e0218c;
+    border-top-color: #333;
+    border-left-color: #333;
+  }
+}

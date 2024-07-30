@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-core'
+import chromium from 'chrome-aws-lambda'
 import { confirmAlert } from '@/utils/confirmAlert'
 import { executablePath } from 'puppeteer'
 // Función para manejar el método POST
@@ -9,10 +10,11 @@ export async function POST(req) {
     const { email, password, dni, dia, cancha, hora } = await req.json()
 
     browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
       headless: true,
       slowMo: 20,
-      executablePath: executablePath(),
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     const page = await browser.newPage()

@@ -186,10 +186,15 @@ export default function ReservaButton() {
         {loading ? 'Reservando...' : 'Reservar'}
       </button>
 
+      {loading && (
+        <div className='w-full flex items-center justify-center'>
+          <div class='loader'></div>
+        </div>
+      )}
       {message && (
-        <div className=' text-red-200 border-red-200 rounded-xl flex bg-red-950 break-words  border p-2 w-full'>
+        <div className=' text-red-200 w-80 border-red-200 rounded-xl flex bg-red-950 break-words  border p-2'>
           {' '}
-          <p className='break-all text-bold '>{message}</p>
+          <p className=' text-bold '>{message}</p>
         </div>
       )}
     </main>
