@@ -78,8 +78,8 @@ export default function ReservaButton() {
       <section className='flex w-full flex-col items-center justify-center'>
         <h2>Usuario</h2>
         <p className='description text-start w-full mb-2'>
-          La contraseña del usuario ya se aplicara automaticamente, asi como el
-          DNI de la "persona invitada"
+          La contraseña del usuario se aplica automaticamente, el DNI de la
+          "persona invitada" también
         </p>
         <select
           className=' hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500 text-white p-2 rounded-xl cursor-pointer'
@@ -121,7 +121,7 @@ export default function ReservaButton() {
             />
             <label
               htmlFor='cancha1'
-              className=' hover:brightness-110 peer-checked:text-[#ffe0f1] text-[#e0218c] peer-checked:bg-[#e0218c]  border-2 font-bold border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+              className='duration-200 hover:brightness-110 peer-checked:text-[#ff6fc0]  border-2 font-bold text-[#ed3ba0] peer-checked:bg-[#55163a]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
             >
               Cancha I
             </label>
@@ -137,7 +137,7 @@ export default function ReservaButton() {
             />
             <label
               htmlFor='cancha2'
-              className=' hover:brightness-110 peer-checked:text-[#ffe0f1]  border-2 font-bold text-[#e0218c] peer-checked:bg-[#e0218c]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+              className='duration-200 hover:brightness-110 peer-checked:text-[#ff6fc0]  border-2 font-bold text-[#ed3ba0] peer-checked:bg-[#55163a]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
             >
               Cancha II
             </label>
@@ -165,9 +165,6 @@ export default function ReservaButton() {
 
       <section className='w-full flex flex-col items-center justify-center'>
         <h2>Horario</h2>
-        <p className='description text-start w-full mb-2'>
-          Si el horario ya fue tomado no se terminara de reservar la cancha
-        </p>
         <select
           className=' hover:brightness-110 py-3 w-full text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
           onChange={(e) => setHoraReserva(e.target.value)}
@@ -192,8 +189,8 @@ export default function ReservaButton() {
       <section className='flex flex-col '>
         <h2>Timer</h2>
         <p className='description'>
-          Ejecutara el codigo a la hora especificada, si se desactiva se
-          ejecutara inmediatamente
+          Reservara a la hora especificada, si se desactiva reservara
+          inmediatamente
         </p>
 
         <div className='h-16 flex items-center gap-3'>
