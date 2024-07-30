@@ -112,7 +112,7 @@ export default function ReservaButton() {
         </select>
         <input
           type='text'
-          placeholder='email'
+          placeholder='Email'
           value={userReserva.email}
           onChange={(e) =>
             setUserReserva({
@@ -120,7 +120,7 @@ export default function ReservaButton() {
               email: e.target.value,
             })
           }
-          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
         />
         <input
           type='text'
@@ -132,7 +132,7 @@ export default function ReservaButton() {
               password: e.target.value,
             })
           }
-          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
         />
         <input
           type='text'
@@ -144,7 +144,7 @@ export default function ReservaButton() {
             })
           }
           placeholder='Dni Del Invitado'
-          className='placeholder:text-violet-500 hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl'
+          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
         />
       </section>
       <section className='flex w-full items-center flex-col justify-center gap-4'>
