@@ -1,6 +1,6 @@
 {
     "functions": {
-      "api/**/*.js": {
+      "app/api/reserva/route.js": {
         "maxDuration": 60
       }
     }
