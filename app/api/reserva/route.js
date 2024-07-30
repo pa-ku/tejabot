@@ -99,7 +99,7 @@ export async function POST(req) {
     try {
       await page.click('input[id="input-dni"]')
       await page.type('input[id="input-dni"]', dni)
-      await new Promise((r) => setTimeout(r, 1500))
+      await new Promise((r) => setTimeout(r, 1000))
     } catch (error) {
       console.error('Error al completar el formulario de reserva:', error)
       throw new Error('No se pudo completar el formulario de reserva')
@@ -107,7 +107,7 @@ export async function POST(req) {
     try {
       await page.click('button[id="btn-id-persona"]')
       await page.click('button[id="btn-id-reserva"]')
-      await new Promise((r) => setTimeout(r, 1500))
+      await new Promise((r) => setTimeout(r, 500))
       /*  await page.screenshot({ path: `reserva.png` }) */
 
       if (await page.type('button[class="confirm"]')) {
