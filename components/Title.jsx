@@ -11,7 +11,7 @@ export default function Title() {
     items-center p-5 justify-center 
     bg-[#161128] mix-blend-darken'
         >
-          <p className='text-5xl text-white'>TejaHack</p>
+          <p className='w-full text-5xl text-white'>TejaHack</p>
         </div>
 
         <span

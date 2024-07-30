@@ -38,7 +38,7 @@ export default function ReservaButton() {
     setMessage('')
 
     try {
-      const response = await fetch('https://tejahack.vercel.app/api/reserva', {
+      const response = await fetch('/api/reserva', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
