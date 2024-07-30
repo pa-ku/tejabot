@@ -19,6 +19,10 @@ module.exports = {
         test: /\.node$/,
         use: 'node-loader', // Asegúrate de que node-loader esté instalado y configurado correctamente
       },
+      {
+        test: /\.map$/,
+        use: 'ignore-loader',
+      },
     ],
   },
   resolve: {
