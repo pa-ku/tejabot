@@ -13,7 +13,6 @@ export async function POST(req) {
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
-      slowMo: 20,
     })
 
     const page = await browser.newPage()
