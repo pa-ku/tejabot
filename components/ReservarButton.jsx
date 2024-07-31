@@ -40,6 +40,11 @@ export default function ReservaButton() {
       password: 'tejadito12345',
       invitado: '14505937',
     },
+    {
+      email: 'gonzamafe@outlook.com',
+      password: 'tejadito123',
+      invitado: '14935382',
+    },
   ]
 
   const handleReserva = async () => {
