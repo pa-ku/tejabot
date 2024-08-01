@@ -103,10 +103,6 @@ export default function ReservaButton() {
 
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
         <h2>Usuario</h2>
-        <p className='description text-start w-full mb-2'>
-          La contraseña del usuario se aplica automaticamente, el DNI de la
-          persona invitada también
-        </p>
         <select
           className='hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
           onClick={(e) =>
