@@ -82,7 +82,7 @@ export default function ReservaButton() {
   }
 
   return (
-    <main className='w-80 flex items-start flex-col gap-5'>
+    <div className='h-max w-80 flex items-start flex-col gap-5'>
       <Title></Title>
 
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
@@ -295,6 +295,6 @@ export default function ReservaButton() {
           <p className=' text-bold '>{message}</p>
         </div>
       )}
-    </main>
+    </div>
   )
 }
