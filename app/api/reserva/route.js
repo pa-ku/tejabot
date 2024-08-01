@@ -1,19 +1,25 @@
-import puppeteer from 'puppeteer'
-/* import chromium from '@sparticuz/chromium' */
+/* import puppeteer from 'puppeteer' */
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium' 
+
+
 import { confirmAlert } from '@/utils/confirmAlert'
 export async function POST(req) {
   let browser
+
   try {
-    // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
 
-    browser = await puppeteer.launch({
+/*     browser = await puppeteer.launch({
       headless: false,
-      slowMo: 20,
-      /*     args: chromium.args,
+      slowMo: 10,
+    }) */
+
+    browser = await puppeteer.launch({
+      args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless, */
+      headless: chromium.headless,
     })
 
     const page = await browser.newPage()
