@@ -10,11 +10,12 @@ import Image from 'next/image'
 export default function ReservaButton() {
   const today = new Date()
   const day = today.getDay()
+  const nextDay = (day + 1) % 7
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [canchaReserva, setCanchaReserva] = useState(1)
-  const [diaReserva, setDiaReserva] = useState(day)
+  const [diaReserva, setDiaReserva] = useState(nextDay)
   const [horarios, setHorarios] = useState([])
   const [userReserva, setUserReserva] = useState({
     email: '',
@@ -85,6 +86,18 @@ export default function ReservaButton() {
   }
 
   const handleReserva = async () => {
+    if (
+      userReserva.email == '' ||
+      userReserva.password == '' ||
+      userReserva.invitado == ''
+    ) {
+      return setMessage('Error: Rellena la información del usuario')
+    }
+
+    if (horarios.length < 1) {
+      return setMessage('Error: Selecciona al menos un horario')
+    }
+
     const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
     const secondsUntilTarget = millisecondsUntilTarget / 1000
     setTimeLeft(secondsUntilTarget)
@@ -107,7 +120,7 @@ export default function ReservaButton() {
             body: JSON.stringify({
               email: userReserva.email,
               password: userReserva.password,
-              dni: userReserva.invitado,
+              dniInvitado: userReserva.invitado,
               dia: diaReserva,
               cancha: canchaReserva,
               hora: horarios,
@@ -132,13 +145,13 @@ export default function ReservaButton() {
   }
 
   return (
-    <div className='h-max w-80 flex items-start flex-col gap-5'>
+    <div className='h-max w-80 flex items-start flex-col gap-10'>
       <Title></Title>
 
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
         <h2>Usuario</h2>
         <select
-          className='hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
+          className='hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 mb-5 rounded-xl cursor-pointer'
           onClick={(e) =>
             setUserReserva({
               email: e.target.options[e.target.selectedIndex].dataset.email,
@@ -206,7 +219,7 @@ export default function ReservaButton() {
           onChange={(e) => setDiaReserva(e.target.value)}
           name=''
           id=''
-          defaultValue={day}
+          defaultValue={nextDay}
         >
           <option value='1'>Lunes</option>
           <option value='2'>Martes</option>
@@ -371,23 +384,59 @@ export default function ReservaButton() {
         </p>
 
         <div className='h-16 flex items-center gap-3'>
-          <input
-            type='checkbox'
-            onChange={() => setHasAlarm(!hasAlarm)}
-            className='relative flex h-6 w-12
-  cursor-pointer appearance-none items-center rounded-xl
-  bg-white duration-200 before:pointer-events-none 
-  before:absolute before:h-4 before:w-4 before:translate-x-1
-  before:rounded-xl before:bg-violet-500 
-  before:duration-200 checked:bg-violet-500 
-  checked:shadow-center checked:shadow-violet-700 
-  checked:before:translate-x-7 checked:before:bg-white'
-          />
+          <span className='relative'>
+            {hasAlarm ? (
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                class='icon icon-tabler icon-tabler-alarm-off'
+                width='44'
+                height='44'
+                viewBox='0 0 24 24'
+                stroke-width='1.5'
+                stroke='#ee52ff'
+                fill='none'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+              >
+                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                <path d='M7.587 7.566a7 7 0 1 0 9.833 9.864m1.35 -2.645a7 7 0 0 0 -8.536 -8.56' />
+                <path d='M12 12v1h1' />
+                <path d='M5.261 5.265l-1.011 .735' />
+                <path d='M17 4l2.75 2' />
+                <path d='M3 3l18 18' />
+              </svg>
+            ) : (
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                class='icon icon-tabler icon-tabler-alarm'
+                width='44'
+                height='44'
+                viewBox='0 0 24 24'
+                stroke-width='1.5'
+                stroke='#fff'
+                fill='none'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+              >
+                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                <path d='M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0' />
+                <path d='M12 10l0 3l2 0' />
+                <path d='M7 4l-2.75 2' />
+                <path d='M17 4l2.75 2' />
+              </svg>
+            )}
+
+            <input
+              onChange={() => setHasAlarm(!hasAlarm)}
+              type='checkbox'
+              className='left-0 top-0 appearance-none cursor-pointer absolute w-full h-full'
+            />
+          </span>
 
           {hasAlarm && (
             <>
               <input
-                className='text-center hover:brightness-110 w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
+                className='text-center hover:brightness-110 w-16 text-violet-200 bg-violet-950  p-2 rounded-xl '
                 type='number'
                 placeholder='Hr'
                 value={timerHr}
@@ -395,7 +444,7 @@ export default function ReservaButton() {
                 onChange={(e) => setTimerHr(e.target.value)}
               />
               <input
-                className='text-center hover:brightness-110  w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
+                className='text-center hover:brightness-110  w-16 text-violet-200 bg-violet-950   p-2 rounded-xl '
                 type='number'
                 value={timerMin}
                 title='minutos'
@@ -435,12 +484,12 @@ export default function ReservaButton() {
           </p>
         </div>
       )}
-      <Image
-        src='/../reserva.png'
+      {/*    <Image
+        src='/reserva.png'
         width={500}
         height={500}
         alt='Picture of the author'
-      />
+      /> */}
       <p className='text-violet-200 text-center w-full'>
         Made with 💜 by paku{' '}
       </p>
