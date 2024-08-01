@@ -19,7 +19,7 @@ export default function Timer({
           <span className='relative'>
             {hasAlarm ? (
               <svg
-                className=' animate-clock'
+                className='animate-clock'
                 width='44'
                 height='44'
                 viewBox='0 0 24 24'
@@ -37,8 +37,7 @@ export default function Timer({
               </svg>
             ) : (
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='icon icon-tabler icon-tabler-alarm'
+                className='-rotate-12'
                 width='44'
                 height='44'
                 viewBox='0 0 24 24'
