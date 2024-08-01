@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Title from './Title'
+import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
@@ -14,10 +15,10 @@ export default function ReservaButton() {
     password: '',
     invitado: '',
   })
-  const [timer, setTimer] = useState(false)
+  const [hasAlarm, setHasAlarm] = useState(false)
 
-  const [horas, setHoras] = useState(7)
-  const [minutos, setMinutos] = useState(0)
+  const [timerHr, setTimerHr] = useState(6)
+  const [timerMin, setTimerMin] = useState(5)
 
   const cuentas = [
     {
@@ -48,37 +49,50 @@ export default function ReservaButton() {
   ]
 
   const handleReserva = async () => {
+    const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
     setLoading(true)
-    setMessage('')
+    setMessage(
+      `Esperando ${
+        millisecondsUntilTarget / 1000
+      } segundos hasta las ${timerHr}:${timerMin} PM...`
+    )
 
-    try {
-      const response = await fetch('/api/reserva', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userReserva.email,
-          password: userReserva.password,
-          dni: userReserva.invitado,
-          dia: diaReserva,
-          cancha: canchaReserva,
-          hora: horaReserva,
-        }),
-      })
+    setTimeout(
+      async () => {
+        setLoading(true)
+        setMessage('')
 
-      const result = await response.json()
+        try {
+          const response = await fetch('/api/reserva', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: userReserva.email,
+              password: userReserva.password,
+              dni: userReserva.invitado,
+              dia: diaReserva,
+              cancha: canchaReserva,
+              hora: horaReserva,
+            }),
+          })
 
-      if (response.ok) {
-        setMessage(result.message)
-      } else {
-        setMessage('Error: ' + result.message)
-      }
-    } catch (error) {
-      setMessage('Error: No se pudo conectar con el servidor')
-    } finally {
-      setLoading(false)
-    }
+          const result = await response.json()
+
+          if (response.ok) {
+            setMessage(result.message)
+          } else {
+            setMessage('Error: ' + result.message)
+          }
+        } catch (error) {
+          setMessage('Error: No se pudo conectar con el servidor')
+        } finally {
+          setLoading(false)
+        }
+      },
+      hasAlarm ? millisecondsUntilTarget : 0
+    )
   }
 
   return (
@@ -242,7 +256,7 @@ export default function ReservaButton() {
         <div className='h-16 flex items-center gap-3'>
           <input
             type='checkbox'
-            onChange={() => setTimer(!timer)}
+            onChange={() => setHasAlarm(!hasAlarm)}
             className='relative flex h-6 w-12
   cursor-pointer appearance-none items-center rounded-xl
   bg-white duration-200 before:pointer-events-none 
@@ -253,22 +267,22 @@ export default function ReservaButton() {
   checked:before:translate-x-7 checked:before:bg-white'
           />
 
-          {timer && (
+          {hasAlarm && (
             <>
               <input
                 className='text-center hover:brightness-110 w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
                 type='number'
                 placeholder='Hr'
-                value={horas}
+                value={timerHr}
                 title='horas'
-                onChange={(e) => setHoras(e.target.value)}
+                onChange={(e) => setTimerHr(e.target.value)}
               />
               <input
                 className='text-center hover:brightness-110  w-16 text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl '
                 type='number'
-                value={minutos}
+                value={timerMin}
                 title='minutos'
-                onChange={(e) => setMinutos(e.target.value)}
+                onChange={(e) => setTimerMin(e.target.value)}
                 placeholder='Min'
               />
             </>
@@ -290,9 +304,14 @@ export default function ReservaButton() {
         </div>
       )}
       {message && (
-        <div className=' text-red-200 w-80 border-red-200 rounded-xl flex bg-red-950 break-words  border p-2'>
-          {' '}
-          <p className=' text-bold '>{message}</p>
+        <div
+          className={`${
+            message.includes('Error')
+              ? 'bg-red-950 text-red-200 border-red-500'
+              : 'bg-green-950 text-green-200 border-green-500'
+          } w-80  rounded-xl flex break-words border p-2`}
+        >
+          <p>{message}</p>
         </div>
       )}
     </div>

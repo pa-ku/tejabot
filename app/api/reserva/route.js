@@ -1,14 +1,14 @@
 import puppeteer from 'puppeteer-core'
 import chromium from '@sparticuz/chromium'
 import { confirmAlert } from '@/utils/confirmAlert'
-
 export async function POST(req) {
-  console.log('Starting Reservation')
   let browser
   try {
     // Obtén los datos del cuerpo de la solicitud
     const { email, password, dni, dia, cancha, hora } = await req.json()
+
     browser = await puppeteer.launch({
+      headless: false,
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
@@ -21,7 +21,6 @@ export async function POST(req) {
     try {
       await page.goto('https://reservar.serviciosmerlo.online/login')
     } catch (error) {
-      console.error('Error al cargar la página de inicio de sesión:', error)
       throw new Error('No se pudo acceder a la página de inicio de sesión')
     }
 
@@ -31,10 +30,6 @@ export async function POST(req) {
       await page.type('input[id="inputPassword"]', password)
       await page.click('button[class="btn btn-primary block full-width m-b"]')
     } catch (error) {
-      console.error(
-        'Error al completar el formulario de inicio de sesión:',
-        error
-      )
       throw new Error('No se pudo completar el formulario de inicio de sesión')
     }
 
@@ -48,7 +43,6 @@ export async function POST(req) {
       )
       await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
     } catch (error) {
-      console.error('Error al navegar a la sección de reservas:', error)
       throw new Error('No se pudo navegar a la sección de reservas')
     }
 
