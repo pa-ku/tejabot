@@ -9,17 +9,17 @@ export async function POST(req) {
   try {
     const { email, password, dniInvitado, dia, cancha, hora } = await req.json()
 
-    /*     browser = await puppeteer.launch({
+    /*   browser = await puppeteer.launch({
       headless: false,
       slowMo: 20,
     }) */
-
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     })
+
     const page = await browser.newPage()
     await confirmAlert(page)
 
@@ -40,12 +40,12 @@ export async function POST(req) {
         throw new Error(err + ' No se pudo iniciar sesión')
       }
     }
-    async function chooseDay() {
+    async function chooseDay(dia) {
       try {
         const daySelector = `#li-dia-${dia} a`
         await page.waitForSelector(daySelector)
         await page.click(daySelector)
-      } catch (error) {
+      } catch (err) {
         throw new Error('No se pudo seleccionar el día ' + dia)
       }
     }
@@ -60,39 +60,44 @@ export async function POST(req) {
         await page.click(
           '#side-menu > li:nth-child(4) > ul > li:first-child > a'
         )
-      } catch (error) {
+      } catch (err) {
         throw new Error('No se pudo navegar a la sección de reservas')
       }
     }
 
-    async function checkTimes() {
-      // Intenta seleccionar un horario de los disponibles
+    async function checkAvaliableTimes(dia, cancha) {
       let horarioEncontrado = false
-      for (const horario of hora) {
-        try {
-          const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-          await page.waitForSelector(horarioSelector, { timeout: 5000 })
+      const canchas = cancha === 3 ? [1, 2] : [cancha]
 
-          const listaHorarios = await page.$$(horarioSelector + ' > li')
+      for (const cancha of canchas) {
+        for (const horario of hora) {
+          try {
+            const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
+            await page.waitForSelector(horarioSelector, { timeout: 5000 })
 
-          for (let item of listaHorarios) {
-            const text = await page.evaluate((el) => el.textContent, item)
+            const listaHorarios = await page.$$(horarioSelector + ' > li')
 
-            if (text.includes(horario)) {
-              const aTag = await item.$('a.alert-link')
-              if (aTag) {
-                await aTag.click()
-                horarioEncontrado = true
-                break
+            for (let hora of listaHorarios) {
+              const text = await page.evaluate((el) => el.textContent, hora)
+
+              if (text.includes(horario)) {
+                const aTag = await hora.$('a.alert-link')
+                if (aTag) {
+                  await aTag.click()
+                  horarioEncontrado = true
+                  break
+                }
               }
             }
-          }
 
-          if (horarioEncontrado) break
-        } catch (error) {
-          console.error('Error al intentar seleccionar el horario:', error)
-          // Continúa con el siguiente horario en caso de error
+            if (horarioEncontrado) break
+          } catch (error) {
+            console.error('Error al intentar seleccionar el horario:', error)
+            // Continúa con el siguiente horario en caso de error
+          }
         }
+
+        if (horarioEncontrado) break
       }
 
       if (!horarioEncontrado) {
@@ -131,9 +136,10 @@ export async function POST(req) {
     await login(email, password)
 
     await goToReservas()
-    await chooseDay()
+    await chooseDay(dia)
 
-    await checkTimes()
+    await checkAvaliableTimes(dia, cancha)
+
     await fillForm(dniInvitado)
 
     await makeReservation()

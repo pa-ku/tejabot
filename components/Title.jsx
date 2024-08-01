@@ -1,17 +1,17 @@
-export default function Title() {
+export default function Title({ children }) {
   return (
     <>
       <div
         className='relative
      flex h-max w-full items-center justify-center
-      overflow-hidden  p-0.5'
+      overflow-hidden rounded-xl  p-1'
       >
         <div
           className='flex h-full w-full 
-    items-center p-5 justify-center 
+    items-center p-5 rounded-xl justify-center 
     bg-[#161128] mix-blend-darken'
         >
-          <p className='text-center w-full text-5xl text-white'>TejaHack</p>
+          <p className='font-extrabold text-center w-full text-5xl text-white'>{children}</p>
         </div>
 
         <span
