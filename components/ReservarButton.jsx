@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Title from './Title'
 import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
 
@@ -20,6 +20,24 @@ export default function ReservaButton() {
   const [timerHr, setTimerHr] = useState(6)
   const [timerMin, setTimerMin] = useState(5)
   const [alarmActive, setAlarmActive] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(0)
+
+  useEffect(() => {
+    let timer
+    if (alarmActive && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => clearInterval(timer)
+  }, [alarmActive, timeLeft])
 
   const cuentas = [
     {
@@ -51,11 +69,10 @@ export default function ReservaButton() {
 
   const handleReserva = async () => {
     const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
-
+    const secondsUntilTarget = millisecondsUntilTarget / 1000
+    setTimeLeft(secondsUntilTarget)
     setMessage(
-      `Esperando ${
-        millisecondsUntilTarget / 1000
-      } segundos hasta las ${timerHr}:${timerMin} PM...`
+      `De ${secondsUntilTarget} Para ejecutar a las ${timerHr}:${timerMin} PM...`
     )
     setAlarmActive(true)
     setTimeout(
@@ -293,7 +310,7 @@ export default function ReservaButton() {
         onClick={handleReserva}
         disabled={loading}
       >
-        {!loading && !alarmActive && 'Reservar' }
+        {!loading && !alarmActive && 'Reservar'}
         {loading && 'Reservando'}
         {alarmActive && 'Esperando Timer'}
       </button>
@@ -311,7 +328,9 @@ export default function ReservaButton() {
               : 'bg-green-950 text-green-200 border-green-500'
           } w-80  rounded-xl flex break-words border p-2`}
         >
-          <p>{message}</p>
+          <p>
+            {alarmActive && timeLeft} {message}
+          </p>
         </div>
       )}
     </div>
