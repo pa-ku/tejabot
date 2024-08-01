@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import puppeteer from 'puppeteer'
+/* import chromium from '@sparticuz/chromium' */
 import { confirmAlert } from '@/utils/confirmAlert'
 export async function POST(req) {
   let browser
@@ -9,10 +9,11 @@ export async function POST(req) {
 
     browser = await puppeteer.launch({
       headless: false,
-      args: chromium.args,
+      slowMo: 20,
+      /*     args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: chromium.headless, */
     })
 
     const page = await browser.newPage()
@@ -35,11 +36,10 @@ export async function POST(req) {
 
     // Navega a las reservas
     try {
-      await page.waitForSelector('a[href="#"]', { timeout: 5000 })
+      await page.waitForSelector('a[href="#"]')
       await page.click('a[href="#"]')
       await page.waitForSelector(
-        '#side-menu > li:nth-child(4) > ul > li:first-child > a',
-        { timeout: 5000 }
+        '#side-menu > li:nth-child(4) > ul > li:first-child > a'
       )
       await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
     } catch (error) {
@@ -49,40 +49,43 @@ export async function POST(req) {
     // Selecciona el día
     try {
       const daySelector = `#li-dia-${dia} a`
-      await page.waitForSelector(daySelector, { timeout: 5000 })
+      await page.waitForSelector(daySelector)
       await page.click(daySelector)
     } catch (error) {
-      console.error('Error al seleccionar el día:', error)
-      throw new Error('No se pudo seleccionar el día especificado')
+      throw new Error('No se pudo seleccionar el día' + dia)
     }
 
-    // Selecciona el horario
-    try {
-      const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-      await page.waitForSelector(horarioSelector, { timeout: 5000 })
+    // Intenta seleccionar un horario de los disponibles
+    let horarioEncontrado = false
+    for (const horario of hora) {
+      try {
+        const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
+        await page.waitForSelector(horarioSelector, { timeout: 5000 })
 
-      const listaHorarios = await page.$$(horarioSelector + ' > li')
+        const listaHorarios = await page.$$(horarioSelector + ' > li')
 
-      let horarioEncontrado = false
-      for (let item of listaHorarios) {
-        const text = await page.evaluate((el) => el.textContent, item)
+        for (let item of listaHorarios) {
+          const text = await page.evaluate((el) => el.textContent, item)
 
-        if (text.includes(hora)) {
-          const aTag = await item.$('a.alert-link')
-          if (aTag) {
-            await aTag.click()
-            horarioEncontrado = true
-            break
+          if (text.includes(horario)) {
+            const aTag = await item.$('a.alert-link')
+            if (aTag) {
+              await aTag.click()
+              horarioEncontrado = true
+              break
+            }
           }
         }
-      }
 
-      if (!horarioEncontrado) {
-        throw new Error('Horario no disponible')
+        if (horarioEncontrado) break
+      } catch (error) {
+        console.error('Error al intentar seleccionar el horario:', error)
+        // Continúa con el siguiente horario en caso de error
       }
-    } catch (error) {
-      console.error('Error al seleccionar el horario:', error)
-      throw new Error('No se pudo seleccionar el horario especificado')
+    }
+
+    if (!horarioEncontrado) {
+      throw new Error('Ninguno de los horarios disponibles pudo ser reservado')
     }
 
     // Completa el formulario de reserva
@@ -102,7 +105,7 @@ export async function POST(req) {
       await page.click('button[id="btn-id-persona"]')
       await page.click('button[id="btn-id-reserva"]')
       await new Promise((r) => setTimeout(r, 500))
-      /*  await page.screenshot({ path: `reserva.png` }) */
+      await page.screenshot({ path: `reserva.png` })
 
       if (await page.type('button[class="confirm"]')) {
         throw new Error('Ya sacaste turno con esta ip')

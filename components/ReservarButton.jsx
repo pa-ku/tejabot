@@ -3,13 +3,19 @@
 import { useEffect, useState } from 'react'
 import Title from './Title'
 import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
+import Checkbox from './ui/Checkbox'
+import useLocalStorage from 'use-local-storage'
+import Image from 'next/image'
 
 export default function ReservaButton() {
+  const today = new Date()
+  const day = today.getDay()
+
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [horaReserva, setHoraReserva] = useState('08:00 - 09:00')
   const [canchaReserva, setCanchaReserva] = useState(1)
-  const [diaReserva, setDiaReserva] = useState(1)
+  const [diaReserva, setDiaReserva] = useState(day)
+  const [horarios, setHorarios] = useState([])
   const [userReserva, setUserReserva] = useState({
     email: '',
     password: '',
@@ -67,6 +73,17 @@ export default function ReservaButton() {
     },
   ]
 
+  function handleHorario(e) {
+    const value = e.target.value
+    setHorarios((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((hora) => hora !== value)
+      } else {
+        return [...prev, value]
+      }
+    })
+  }
+
   const handleReserva = async () => {
     const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
     const secondsUntilTarget = millisecondsUntilTarget / 1000
@@ -93,7 +110,7 @@ export default function ReservaButton() {
               dni: userReserva.invitado,
               dia: diaReserva,
               cancha: canchaReserva,
-              hora: horaReserva,
+              hora: horarios,
             }),
           })
 
@@ -181,9 +198,136 @@ export default function ReservaButton() {
           className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
         />
       </section>
+
+      <section className='flex w-full flex-col items-center justify-center'>
+        <h2>Día</h2>
+        <select
+          className=' hover:brightness-110 py-3 w-full  text-violet-200 bg-violet-950 border border-violet-500 p-2 rounded-xl cursor-pointer'
+          onChange={(e) => setDiaReserva(e.target.value)}
+          name=''
+          id=''
+          defaultValue={day}
+        >
+          <option value='1'>Lunes</option>
+          <option value='2'>Martes</option>
+          <option value='3'>Miercoles</option>
+          <option value='4'>Jueves</option>
+          <option value='5'>Viernes</option>
+          <option value='6'>Sabado</option>
+          <option value='7'>Domingo</option>
+        </select>
+      </section>
+
+      <section className=''>
+        <h2>Horario</h2>
+        <p className='description'>
+          Elige los horarios en orden que se intentaran sacar, si no se
+          encuentra uno disponible se intentara otro
+        </p>
+        <div className='grid grid-cols-3 gap-2 py-2'>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='08:00 - 09:00'
+          >
+            8 - 9
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='09:00 - 10:00'
+          >
+            9 - 10
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='10:00 - 11:00'
+          >
+            10 - 11
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='11:00 - 12:00'
+          >
+            11 - 12
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='12:00 - 13:00'
+          >
+            12 - 13
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='13:00 - 14:00'
+          >
+            13 - 14
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='14:00 - 15:00'
+          >
+            14 - 15
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='15:00 - 16:00'
+          >
+            15 - 16
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='16:00 - 17:00'
+          >
+            16 - 17
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='17:00 - 18:00'
+          >
+            17 - 18
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='18:00 - 19:00'
+          >
+            18 - 19
+          </Checkbox>
+          <Checkbox
+            array={horarios}
+            onClick={handleHorario}
+            value='19:00 - 20:00'
+          >
+            19 - 20
+          </Checkbox>
+        </div>
+
+        <button
+          className='w-full text-violet-200 rounded-xl hover:bg-violet-900 bg-violet-950 py-2'
+          onClick={() => setHorarios([])}
+        >
+          Reset
+        </button>
+        <div className='flex justify-center w-full flex-wrap gap-2'>
+          {horarios.map((h) => (
+            <p className=' bg-green-950 text-green-200 px-2 py-1  rounded-xl'>
+              {h}
+            </p>
+          ))}
+        </div>
+      </section>
       <section className='flex w-full items-center flex-col justify-center gap-4'>
         <h2>Cancha</h2>
-        <div className='w-full items-center justify-center flex gap-4'>
+        <div className=' w-full items-center justify-center flex gap-5'>
           <div>
             <input
               id='cancha1'
@@ -196,7 +340,7 @@ export default function ReservaButton() {
             />
             <label
               htmlFor='cancha1'
-              className='duration-200 hover:brightness-110 peer-checked:text-[#ff6fc0]  border-2 font-bold text-[#ed3ba0] peer-checked:bg-[#55163a]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
+              className='duration-200 hover:brightness-110 peer-checked:text-[#ffbae1]  border-2 font-bold text-[#ed3ba0] peer-checked:bg-[#55163a]  border-[#cc187e] rounded-xl bg-transparent px-4 py-3 cursor-pointer'
             >
               Cancha I
             </label>
@@ -219,48 +363,6 @@ export default function ReservaButton() {
           </div>
         </div>
       </section>
-
-      <section className='flex w-full flex-col items-center justify-center'>
-        <h2>Día</h2>
-        <select
-          className=' hover:brightness-110 py-3 w-full  text-violet-200 bg-violet-950 border border-violet-500 p-2 rounded-xl cursor-pointer'
-          onChange={(e) => setDiaReserva(e.target.value)}
-          name=''
-          id=''
-        >
-          <option value='1'>Lunes</option>
-          <option value='2'>Martes</option>
-          <option value='3'>Miercoles</option>
-          <option value='4'>Jueves</option>
-          <option value='5'>Viernes</option>
-          <option value='6'>Sabado</option>
-          <option value='7'>Domingo</option>
-        </select>
-      </section>
-
-      <section className='w-full flex flex-col items-center justify-center'>
-        <h2>Horario</h2>
-        <select
-          className=' hover:brightness-110 py-3 w-full text-violet-200 bg-violet-950 border border-violet-500  p-2 rounded-xl cursor-pointer'
-          onChange={(e) => setHoraReserva(e.target.value)}
-          name=''
-          id=''
-        >
-          <option value='08:00 - 09:00'>8 - 9</option>
-          <option value='09:00 - 10:00'>9 - 10</option>
-          <option value='10:00 - 11:00'>10 - 11</option>
-          <option value='11:00 - 12:00'>11 - 12</option>
-          <option value='12:00 - 13:00'>12 - 13</option>
-          <option value='13:00 - 14:00'>13 - 14</option>
-          <option value='14:00 - 15:00'>14 - 15</option>
-          <option value='15:00 - 16:00'>15 - 16</option>
-          <option value='16:00 - 17:00'>16 - 17</option>
-          <option value='17:00 - 18:00'>17 - 18</option>
-          <option value='18:00 - 19:00'>18 - 19</option>
-          <option value='19:00 - 20:00'>19 - 20</option>
-        </select>
-      </section>
-
       <section className='flex flex-col '>
         <h2>Timer</h2>
         <p className='description'>
@@ -333,6 +435,15 @@ export default function ReservaButton() {
           </p>
         </div>
       )}
+      <Image
+        src='/../reserva.png'
+        width={500}
+        height={500}
+        alt='Picture of the author'
+      />
+      <p className='text-violet-200 text-center w-full'>
+        Made with 💜 by paku{' '}
+      </p>
     </div>
   )
 }
