@@ -28,6 +28,7 @@ export default function ChooseTime({ arrHorarios, $onClick, fcHorarios }) {
         <div className='grid grid-cols-3 gap-2 py-2'>
           {arrTime.map((time) => (
             <Checkbox
+              key={time.value}
               array={arrHorarios}
               $onClick={$onClick}
               value={time.value}
