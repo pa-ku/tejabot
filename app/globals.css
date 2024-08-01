@@ -9,8 +9,11 @@
   margin: 0;
 }
 
-
-
+:root {
+  --primary-100: #ff6cbf;
+  --primary-300: #cc187e;
+  --primary-500: #55163a;
+}
 
 body {
   background-color: #161128;
@@ -149,18 +152,20 @@ h2 {
 }
 
 .animate-clock {
-  animation: 2s clock infinite;
+  animation: 2s clock linear infinite;
 }
 
 @keyframes clock {
-  
   0% {
+    rotate: 0deg;
+  }
+  30% {
     rotate: -10deg;
   }
-  50% {
+  70% {
     rotate: 10deg;
   }
   100% {
-    rotate: -10deg;
+    rotate: 0deg;
   }
 }

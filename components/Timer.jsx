@@ -17,43 +17,26 @@ export default function Timer({
 
         <div className='h-16 flex items-center gap-3'>
           <span className='relative'>
-            {hasAlarm ? (
-              <svg
-                className='animate-clock'
-                width='44'
-                height='44'
-                viewBox='0 0 24 24'
-                stroke-width='1.5'
-                stroke='#ff95f3'
-                fill='none'
-                stroke-linecap='round'
-                stroke-linejoin='round'
-              >
-                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-                <path d='M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0' />
-                <path d='M12 10l0 3l2 0' />
-                <path d='M7 4l-2.75 2' />
-                <path d='M17 4l2.75 2' />
-              </svg>
-            ) : (
-              <svg
-                className='-rotate-12'
-                width='44'
-                height='44'
-                viewBox='0 0 24 24'
-                stroke-width='1.5'
-                stroke='#fff'
-                fill='none'
-                stroke-linecap='round'
-                stroke-linejoin='round'
-              >
-                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-                <path d='M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0' />
-                <path d='M12 10l0 3l2 0' />
-                <path d='M7 4l-2.75 2' />
-                <path d='M17 4l2.75 2' />
-              </svg>
-            )}
+            <svg
+              className={`duration-200 ${
+                hasAlarm
+                  ? 'animate-clock stroke-[var(--primary-100)] '
+                  : ' stroke-white'
+              }  `}
+              width='44'
+              height='44'
+              viewBox='0 0 24 24'
+              stroke-width='1.5'
+              fill='none'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            >
+              <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+              <path d='M12 13m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0' />
+              <path d='M12 10l0 3l2 0' />
+              <path d='M7 4l-2.75 2' />
+              <path d='M17 4l2.75 2' />
+            </svg>
 
             <input
               onChange={() => fcHasAlarm(!hasAlarm)}
@@ -65,7 +48,7 @@ export default function Timer({
           {hasAlarm && (
             <>
               <input
-                className=' font-bold text-center hover:brightness-110 w-16 text-violet-200 bg-violet-950  p-2 rounded-xl '
+                className=' font-bold text-center hover:brightness-110 w-16 text-white bg-[var(--primary-500)] p-2 rounded-xl '
                 type='number'
                 maxLength={1}
                 placeholder='Hr'
@@ -74,7 +57,7 @@ export default function Timer({
                 onChange={(e) => fcTimerHr(e.target.value)}
               />
               <input
-                className='font-bold  text-center hover:brightness-110  w-16 text-violet-200 bg-violet-950   p-2 rounded-xl '
+                className='font-bold  text-center hover:brightness-110  w-16 text-white bg-[var(--primary-500)] p-2 rounded-xl '
                 type='number'
                 value={timerMin}
                 title='minutos'
