@@ -19,6 +19,7 @@ export default function ReservaButton() {
 
   const [timerHr, setTimerHr] = useState(6)
   const [timerMin, setTimerMin] = useState(5)
+  const [alarmActive, setAlarmActive] = useState(false)
 
   const cuentas = [
     {
@@ -26,11 +27,11 @@ export default function ReservaButton() {
       password: '',
       invitado: '',
     },
-    {
+    /*     {
       email: 'p4blo.kuhn@gmail.com',
       password: 'tejadito123',
       invitado: '12575504',
-    },
+    }, */
     {
       email: 'agussisa@outlook.es',
       password: 'tejadito123',
@@ -50,15 +51,16 @@ export default function ReservaButton() {
 
   const handleReserva = async () => {
     const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
-    setLoading(true)
+
     setMessage(
       `Esperando ${
         millisecondsUntilTarget / 1000
       } segundos hasta las ${timerHr}:${timerMin} PM...`
     )
-
+    setAlarmActive(true)
     setTimeout(
       async () => {
+        setAlarmActive(false)
         setLoading(true)
         setMessage('')
 
@@ -295,7 +297,9 @@ export default function ReservaButton() {
         onClick={handleReserva}
         disabled={loading}
       >
-        {loading ? 'Reservando...' : 'Reservar'}
+        {!loading && !alarmActive && 'Reservar' }
+        {loading && 'Reservando'}
+        {alarmActive && 'Esperando Timer'}
       </button>
 
       {loading && (
