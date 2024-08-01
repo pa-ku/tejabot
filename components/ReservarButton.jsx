@@ -331,9 +331,12 @@ export default function ReservaButton() {
           Reset
         </button>
         <div className='flex justify-center w-full flex-wrap gap-2'>
-          {horarios.map((h) => (
-            <p className=' bg-green-950 text-green-200 px-2 py-1  rounded-xl'>
-              {h}
+          {horarios.map((hora) => (
+            <p
+              key={hora}
+              className=' bg-green-950 text-green-200 px-2 py-1  rounded-xl'
+            >
+              {hora}
             </p>
           ))}
         </div>
