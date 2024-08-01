@@ -4,7 +4,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "TejaHack",
+  title: "TejaBot",
   description: "Saca turnos desde la comodidad de un bot",
 };
 

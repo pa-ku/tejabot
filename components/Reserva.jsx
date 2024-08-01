@@ -120,7 +120,7 @@ export default function ReservaButton() {
 
   return (
     <div className='h-max w-80 flex items-start flex-col gap-10'>
-      <Title>TejaHack</Title>
+      <Title>TejaBot🤖</Title>
 
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
         <h2>Usuario</h2>

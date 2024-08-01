@@ -8,7 +8,7 @@ export default function Title({ children }) {
       >
         <div
           className='flex h-full w-full 
-    items-center p-5 rounded-xl justify-center 
+    items-center py-8 rounded-xl justify-center 
     bg-[#161128] mix-blend-darken'
         >
           <p className='font-extrabold text-center w-full text-5xl text-white'>{children}</p>
