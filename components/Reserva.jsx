@@ -59,8 +59,6 @@ export default function ReservaButton() {
     })
   }
 
-  console.log(canchaReserva)
-
   const handleReserva = async () => {
     if (
       userReserva.email == '' ||
@@ -149,7 +147,7 @@ export default function ReservaButton() {
 
       <ChooseTime
         fcHorarios={setHorarios}
-        $onClick={handleHorario}
+        handleHorario={handleHorario}
         arrHorarios={horarios}
       />
 

@@ -2,7 +2,7 @@
 import Button from './ui/Button'
 import Checkbox from './ui/Checkbox'
 
-export default function ChooseTime({ arrHorarios, $onClick, fcHorarios }) {
+export default function ChooseTime({ arrHorarios, handleHorario, fcHorarios }) {
   const arrTime = [
     { name: '8 - 9', value: '08:00 - 09:00' },
     { name: '9 - 10', value: '09:00 - 10:00' },
@@ -31,7 +31,7 @@ export default function ChooseTime({ arrHorarios, $onClick, fcHorarios }) {
             <Checkbox
               key={time.value}
               array={arrHorarios}
-              $onClick={$onClick}
+              onChange={handleHorario}
               value={time.value}
             >
               {time.name}

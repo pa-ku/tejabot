@@ -1,9 +1,9 @@
-export default function Checkbox({ name, children, value, $onClick, array }) {
+export default function Checkbox({ name, children, value, onChange, array }) {
   return (
     <>
       <div className='flex items-center relative justify-center'>
         <input
-          onClick={$onClick}
+          onChange={onChange}
           name={name}
           checked={array && array.includes(value)}
           className=' cursor-pointer w-full  absolute h-full appearance-none peer  '
