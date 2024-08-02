@@ -7,15 +7,16 @@ import Court from './Court'
 import Timer from './Timer'
 import ChooseTime from './ChooseTime'
 import Users from './Users'
+import ChooseDay from './ChooseDay'
 
 export default function ReservaButton() {
-  const today = new Date()
-  const day = today.getDay()
-  const nextDay = (day + 1) % 7
+  const date = new Date()
+  const today = date.getDay()
+  const tomorrow = (today + 1) % 7
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [diaReserva, setDiaReserva] = useState(nextDay)
+  const [diaReserva, setDiaReserva] = useState(tomorrow)
   const [horarios, setHorarios] = useState([])
 
   const [canchaReserva, setCanchaReserva] = useState(3)
@@ -30,6 +31,8 @@ export default function ReservaButton() {
     password: '',
     invitado: '',
   })
+
+console.log(diaReserva);
 
   useEffect(() => {
     let timer
@@ -126,24 +129,11 @@ export default function ReservaButton() {
 
       <Users setUserReserva={setUserReserva} userReserva={userReserva} />
 
-      <section className='flex w-full flex-col items-center justify-center'>
-        <h2>Día</h2>
-        <select
-          className=' hover:brightness-110 py-3 w-full  text-violet-200 bg-violet-950 border border-violet-500 p-2 rounded-xl cursor-pointer'
-          onChange={(e) => setDiaReserva(e.target.value)}
-          name=''
-          id=''
-          defaultValue={nextDay}
-        >
-          <option value='1'>Lunes</option>
-          <option value='2'>Martes</option>
-          <option value='3'>Miercoles</option>
-          <option value='4'>Jueves</option>
-          <option value='5'>Viernes</option>
-          <option value='6'>Sabado</option>
-          <option value='7'>Domingo</option>
-        </select>
-      </section>
+      <ChooseDay
+        setDiaReserva={setDiaReserva}
+        today={today}
+        tomorrow={tomorrow}
+      />
 
       <ChooseTime
         fcHorarios={setHorarios}

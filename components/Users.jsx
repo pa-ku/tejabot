@@ -5,13 +5,7 @@ import useLocalStorage from 'use-local-storage'
 
 export default function Users({ setUserReserva, userReserva }) {
   const [showUsers, setShowUsers] = useState(false)
-  const [userAccounts, setUserAccounts] = useLocalStorage('users', [
-    {
-      email: '',
-      password: '',
-      invitado: '',
-    },
-  ])
+  const [userAccounts, setUserAccounts] = useLocalStorage('users', [])
   const [msj, setMsj] = useState('')
 
   function handleSaveUser() {
@@ -44,7 +38,7 @@ export default function Users({ setUserReserva, userReserva }) {
   }
   function handleSelectedUser({ email, password, invitado }) {
     setShowUsers(false)
-    setMsj('Usuario cargado')
+    setMsj('Usuario Cargado')
     setUserReserva({
       email: email,
       password: password,
@@ -54,7 +48,7 @@ export default function Users({ setUserReserva, userReserva }) {
 
   function handleShowUsers() {
     if (userAccounts.length < 1) {
-      setMsj('No hay usuarios guardados')
+      setMsj('Error: No hay usuarios guardados')
       return
     }
     setShowUsers(!showUsers)
