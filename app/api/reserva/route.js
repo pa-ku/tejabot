@@ -1,7 +1,3 @@
-/* import puppeteer from 'puppeteer' */
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
-
 import { confirmAlert } from '@/utils/confirmAlert'
 export async function POST(req) {
   let browser
@@ -9,16 +5,27 @@ export async function POST(req) {
   try {
     const { email, password, dniInvitado, dia, cancha, hora } = await req.json()
 
-    /*     browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 10,
-    }) */
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    })
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    let puppeteer
+    let chromium
+    if (isDevelopment) {
+      // En desarrollo, usa Puppeteer directamente
+      puppeteer = await import('puppeteer')
+      browser = await puppeteer.launch({
+        headless: false,
+        slowMo: 5,
+      })
+    } else {
+      // En producción, usa Puppeteer Core con Chromium
+      puppeteer = await import('puppeteer-core')
+      chromium = await import('@sparticuz/chromium')
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      })
+    }
 
     const page = await browser.newPage()
     await confirmAlert(page)

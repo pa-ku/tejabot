@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Title from './Title'
 import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
 import Court from './Court'
@@ -8,6 +8,7 @@ import Timer from './Timer'
 import ChooseTime from './ChooseTime'
 import Users from './Users'
 import ChooseDay from './ChooseDay'
+import Checkbox from './ui/Checkbox'
 
 export default function ReservaButton() {
   const date = new Date()
@@ -31,8 +32,9 @@ export default function ReservaButton() {
     password: '',
     invitado: '',
   })
+  const [isRetry, setIsRetry] = useState(false)
 
-  console.log(diaReserva)
+  const fetchCounterRef = useRef(0)
 
   useEffect(() => {
     let timer
@@ -78,6 +80,7 @@ export default function ReservaButton() {
     const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
     const secondsUntilTarget = millisecondsUntilTarget / 1000
     setTimeLeft(secondsUntilTarget)
+
     setMessage(
       `De ${Math.floor(
         secondsUntilTarget
@@ -110,17 +113,34 @@ export default function ReservaButton() {
 
           if (response.ok) {
             setMessage(result.message)
+            fetchCounterRef.current = 0
           } else {
             setMessage('Error: ' + result.message)
+            isRetry && retryFetch()
           }
         } catch (error) {
           setMessage('Error: No se pudo conectar con el servidor')
+          isRetry && retryFetch()
         } finally {
           setLoading(false)
         }
       },
       hasAlarm ? millisecondsUntilTarget : 0
     )
+  }
+
+  function retryFetch() {
+    fetchCounterRef.current += 1
+    if (fetchCounterRef.current >= 3) {
+      setMessage('Error: No se pudo reservar luego de 3 intentos')
+      return
+    } else {
+      setMessage(` Reintentando en 5 minutos...`)
+
+      setTimeout(() => {
+        handleReserva()
+      }, 50000)
+    }
   }
 
   return (
@@ -152,6 +172,16 @@ export default function ReservaButton() {
         timerMin={timerMin}
       ></Timer>
 
+      <section>
+        <Checkbox value={isRetry} onChange={() => setIsRetry(!isRetry)}>
+          Activar reintentos
+        </Checkbox>
+        <p className='description'>
+          Permite intentar nuevamente cada 5minutos si no se encuentra el turno,
+          hasta un maximo de 3 veces
+        </p>
+      </section>
+
       <button
         className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-100'
         onClick={handleReserva}
@@ -164,7 +194,7 @@ export default function ReservaButton() {
 
       {loading && (
         <div className='w-full flex items-center justify-center'>
-          <div class='loader'></div>
+          <div className='loader'></div>
         </div>
       )}
       {message && (

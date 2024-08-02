@@ -45,7 +45,6 @@ export default function Users({ setUserReserva, userReserva }) {
       prevAccounts.filter((_, i) => i !== index)
     )
   }
-  
 
   function handleSelectedUser({ email, password, invitado }) {
     setShowUsers(false)
@@ -79,24 +78,22 @@ export default function Users({ setUserReserva, userReserva }) {
             <>
               <div className='p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
                 {userAccounts.map(({ email, password, invitado }, index) => (
-                  <>
-                    <div className='items-center h-full w-full flex'>
-                      <button
-                        onClick={() =>
-                          handleSelectedUser({ email, password, invitado })
-                        }
-                        className='h-full rounded-l-md bg-gray-700 hover:brightness-110 p-2 pl-3 text-start w-full  text-white '
-                      >
-                        {email}
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(index)}
-                        className='m-1 hover:bg-red-300  rounded-r-md p-2 bg-red-400'
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </>
+                  <div key={index} className='items-center h-full w-full flex'>
+                    <button
+                      onClick={() =>
+                        handleSelectedUser({ email, password, invitado })
+                      }
+                      className='h-full rounded-l-md bg-gray-700 hover:brightness-110 p-2 pl-3 text-start w-full  text-white '
+                    >
+                      {email}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(index)}
+                      className='m-1 hover:bg-red-300  rounded-r-md p-2 bg-red-400'
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
               </div>
             </>
