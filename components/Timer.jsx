@@ -19,9 +19,7 @@ export default function Timer({
           <span className='relative'>
             <svg
               className={`duration-200 ${
-                hasAlarm
-                  ? 'animate-clock stroke-[var(--primary-100)] '
-                  : ' stroke-white'
+                hasAlarm ? 'stroke-[var(--primary-100)] ' : ' stroke-white'
               }  `}
               width='44'
               height='44'

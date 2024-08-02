@@ -153,7 +153,7 @@ export default function ReservaButton() {
       ></Timer>
 
       <button
-        className='w-full slick-button p-3 rounded-xl uppercase text-white'
+        className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-100'
         onClick={handleReserva}
         disabled={loading}
       >
