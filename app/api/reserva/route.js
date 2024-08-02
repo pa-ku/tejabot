@@ -1,4 +1,7 @@
 import { confirmAlert } from '@/utils/confirmAlert'
+import puppeteerCore from 'puppeteer-core'
+import puppeteer from 'puppeteer'
+import chromium from '@sparticuz/chromium'
 export async function POST(req) {
   let browser
 
@@ -6,20 +9,18 @@ export async function POST(req) {
     const { email, password, dniInvitado, dia, cancha, hora } = await req.json()
 
     const isDevelopment = process.env.NODE_ENV === 'development'
-    let puppeteer
-    let chromium
+
     if (isDevelopment) {
       // En desarrollo, usa Puppeteer directamente
-      puppeteer = await import('puppeteer')
+
       browser = await puppeteer.launch({
         headless: false,
         slowMo: 5,
       })
     } else {
       // En producción, usa Puppeteer Core con Chromium
-      puppeteer = await import('puppeteer-core')
-      chromium = await import('@sparticuz/chromium')
-      browser = await puppeteer.launch({
+
+      browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
