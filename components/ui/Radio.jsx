@@ -3,6 +3,7 @@ export default function Radio({
   children,
   value,
   onChange,
+
   defaultChecked,
 }) {
   return (
@@ -16,7 +17,9 @@ export default function Radio({
           type={'radio'}
           defaultChecked={defaultChecked}
         />
-        <p className='text-sm w-full text-center duration-200  border-2 font-bold  bg-gray-800 rounded-xl peer-checked:bg-[#55163a] peer-checked:border-[#cc187e]  border-gray-700 px-4 text-white py-3 cursor-pointer '>
+        <p
+          className={`text-sm w-full text-center duration-200  border-2 font-bold  bg-gray-800 rounded-xl peer-checked:bg-[#55163a] peer-checked:border-[#cc187e]  border-gray-700 px-4 text-white py-3 cursor-pointer `}
+        >
           {children}
         </p>
       </div>
