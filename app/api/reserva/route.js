@@ -19,7 +19,7 @@ export async function POST(req) {
       // En producción, usa Puppeteer Core con Chromium
       puppeteer = await import('puppeteer-core')
       chromium = await import('@sparticuz/chromium')
-      browser = await puppeteerCore.launch({
+      browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath(),
