@@ -6,7 +6,7 @@ import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
 import Court from './Court'
 import Timer from './Timer'
 import ChooseTime from './ChooseTime'
-import { cuentas } from '@/app/data'
+import Users from './Users'
 
 export default function ReservaButton() {
   const today = new Date()
@@ -17,17 +17,19 @@ export default function ReservaButton() {
   const [message, setMessage] = useState('')
   const [diaReserva, setDiaReserva] = useState(nextDay)
   const [horarios, setHorarios] = useState([])
-  const [userReserva, setUserReserva] = useState({
-    email: '',
-    password: '',
-    invitado: '',
-  })
+
   const [canchaReserva, setCanchaReserva] = useState(3)
   const [hasAlarm, setHasAlarm] = useState(false)
   const [timerHr, setTimerHr] = useState(6)
   const [timerMin, setTimerMin] = useState(5)
   const [alarmActive, setAlarmActive] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
+
+  const [userReserva, setUserReserva] = useState({
+    email: '',
+    password: '',
+    invitado: '',
+  })
 
   useEffect(() => {
     let timer
@@ -56,6 +58,8 @@ export default function ReservaButton() {
       }
     })
   }
+
+  console.log(canchaReserva)
 
   const handleReserva = async () => {
     if (
@@ -122,69 +126,7 @@ export default function ReservaButton() {
     <div className='h-max w-80 flex items-start flex-col gap-10'>
       <Title>TejaBot🤖</Title>
 
-      <section className='flex w-full flex-col items-center gap-2 justify-center'>
-        <h2>Usuario</h2>
-        <select
-          className='hover:brightness-110 text-violet-200 w-full py-3 bg-violet-950 border border-violet-500  p-2 mb-5 rounded-xl cursor-pointer'
-          onClick={(e) =>
-            setUserReserva({
-              email: e.target.options[e.target.selectedIndex].dataset.email,
-              password: e.target.value,
-              invitado:
-                e.target.options[e.target.selectedIndex].dataset.invitado,
-            })
-          }
-        >
-          {cuentas.map((user) => (
-            <>
-              <option
-                key={user.email}
-                data-email={user.email}
-                data-invitado={user.invitado}
-                value={user.password}
-              >
-                {user.email}
-              </option>
-            </>
-          ))}
-        </select>
-        <input
-          type='text'
-          placeholder='Email'
-          value={userReserva.email}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              email: e.target.value,
-            })
-          }
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
-        <input
-          type='text'
-          placeholder='Password'
-          value={userReserva.password}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              password: e.target.value,
-            })
-          }
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
-        <input
-          type='text'
-          value={userReserva.invitado}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              invitado: e.target.value,
-            })
-          }
-          placeholder='Dni Del Invitado'
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
-      </section>
+      <Users setUserReserva={setUserReserva} userReserva={userReserva} />
 
       <section className='flex w-full flex-col items-center justify-center'>
         <h2>Día</h2>
@@ -211,7 +153,7 @@ export default function ReservaButton() {
         arrHorarios={horarios}
       />
 
-      <Court fcCancha={(e) => setCanchaReserva(e.target.value)}></Court>
+      <Court setCanchaReserva={setCanchaReserva}></Court>
 
       <Timer
         fcHasAlarm={setHasAlarm}

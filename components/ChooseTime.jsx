@@ -1,4 +1,5 @@
 'use client'
+import Button from './ui/Button'
 import Checkbox from './ui/Checkbox'
 
 export default function ChooseTime({ arrHorarios, $onClick, fcHorarios }) {
@@ -38,12 +39,7 @@ export default function ChooseTime({ arrHorarios, $onClick, fcHorarios }) {
           ))}
         </div>
 
-        <button
-          className='w-full text-white rounded-xl hover:bg-violet-800 bg-violet-900 py-2'
-          onClick={() => fcHorarios([])}
-        >
-          Reset
-        </button>
+        <Button onClick={() => fcHorarios([])}>Reset</Button>
         <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
           {arrHorarios.map((hora) => (
             <p

@@ -2,14 +2,14 @@ export default function Radio({
   name,
   children,
   value,
-  $onClick,
+  onChange,
   defaultChecked,
 }) {
   return (
     <>
       <div className=' group flex items-center relative justify-center'>
         <input
-          onClick={$onClick}
+          onChange={onChange}
           name={name}
           className='hover:brightness-110 cursor-pointer w-full   absolute h-full appearance-none peer  '
           value={value}
