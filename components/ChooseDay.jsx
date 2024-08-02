@@ -1,7 +1,12 @@
 'use client'
 import Radio from './ui/Radio'
 
-export default function ChooseDay({ setDiaReserva, today, tomorrow }) {
+export default function ChooseDay({
+  setDiaReserva,
+  today,
+  tomorrow,
+  pasadoMañana,
+}) {
   const daysOfWeek = [
     'domingo',
     'lunes',
@@ -32,6 +37,14 @@ export default function ChooseDay({ setDiaReserva, today, tomorrow }) {
             value={tomorrow}
           >
             {daysOfWeek[tomorrow]}
+          </Radio>
+          <Radio
+            onChange={() => setDiaReserva(pasadoMañana)}
+            defaultChecked
+            name={'date'}
+            value={pasadoMañana}
+          >
+            {daysOfWeek[pasadoMañana]}
           </Radio>
         </div>
       </section>
