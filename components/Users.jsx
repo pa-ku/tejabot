@@ -11,10 +11,19 @@ export default function Users({ setUserReserva, userReserva }) {
   function handleSaveUser() {
     const { email, password, invitado } = userReserva
 
-    if (email == '' || password == '' || invitado == '') {
-      setMsj('Error: Rellena los campos antes de guardar')
+    if (email == '') {
+      setMsj('Error: Rellena el email')
       return
     }
+    if (password == '') {
+      setMsj('Error: Rellena la password')
+      return
+    }
+    if (invitado == '') {
+      setMsj('Error: Rellena el dni del invitado')
+      return
+    }
+
     setMsj('Usuario guardado')
     const newUser = {
       email: email,
@@ -30,12 +39,14 @@ export default function Users({ setUserReserva, userReserva }) {
       invitado: '',
     })
   }
-  function handleDeleteUser(email) {
-    setMsj('Usuario elminiado')
+  function handleDeleteUser(index) {
+    setMsj('Usuario eliminado')
     setUserAccounts((prevAccounts) =>
-      prevAccounts.filter((user) => user.email !== email)
+      prevAccounts.filter((_, i) => i !== index)
     )
   }
+  
+
   function handleSelectedUser({ email, password, invitado }) {
     setShowUsers(false)
     setMsj('Usuario Cargado')
@@ -67,7 +78,7 @@ export default function Users({ setUserReserva, userReserva }) {
           {showUsers && (
             <>
               <div className='p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
-                {userAccounts.map(({ email, password, invitado }) => (
+                {userAccounts.map(({ email, password, invitado }, index) => (
                   <>
                     <div className='items-center h-full w-full flex'>
                       <button
@@ -79,7 +90,7 @@ export default function Users({ setUserReserva, userReserva }) {
                         {email}
                       </button>
                       <button
-                        onClick={() => handleDeleteUser(email)}
+                        onClick={() => handleDeleteUser(index)}
                         className='m-1 hover:bg-red-300  rounded-r-md p-2 bg-red-400'
                       >
                         ✕

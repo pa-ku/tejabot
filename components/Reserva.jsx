@@ -32,7 +32,7 @@ export default function ReservaButton() {
     invitado: '',
   })
 
-console.log(diaReserva);
+  console.log(diaReserva)
 
   useEffect(() => {
     let timer
