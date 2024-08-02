@@ -39,12 +39,12 @@ export default function ChooseTime({ arrHorarios, handleHorario, fcHorarios }) {
           ))}
         </div>
 
-        <Button onClick={() => fcHorarios([])}>Reset</Button>
+        <Button color={'bg-gray-800'} onClick={() => fcHorarios([])}>Limpiar</Button>
         <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
           {arrHorarios.map((hora) => (
             <p
               key={hora}
-              className='text-xs bg-violet-900 text-white px-2 py-1 rounded-md'
+              className='text-xs bg-violet-950 text-white px-2 py-1 rounded-md'
             >
               {hora}
             </p>
