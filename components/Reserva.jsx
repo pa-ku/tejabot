@@ -9,6 +9,7 @@ import ChooseTime from './ChooseTime'
 import Users from './Users'
 import ChooseDay from './ChooseDay'
 import Checkbox from './ui/Checkbox'
+import MsjStatus from './MsjStatus'
 
 export default function ReservaButton() {
   const date = new Date()
@@ -198,17 +199,9 @@ export default function ReservaButton() {
         </div>
       )}
       {message && (
-        <div
-          className={`${
-            message.includes('Error')
-              ? 'bg-red-950 text-red-200 border-red-500'
-              : 'bg-green-950 text-green-200 border-green-500'
-          } w-80  rounded-xl flex break-words border p-2`}
-        >
-          <p>
-            {alarmActive && Math.floor(timeLeft)} {message}
-          </p>
-        </div>
+        <MsjStatus message={message}>
+          {alarmActive && Math.floor(timeLeft)} {message}
+        </MsjStatus>
       )}
 
       <p className='text-violet-200 text-center w-full'>

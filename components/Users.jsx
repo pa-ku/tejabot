@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Button from './ui/Button'
 import useLocalStorage from 'use-local-storage'
+import MsjStatus from './MsjStatus'
 
 export default function Users({ setUserReserva, userReserva }) {
   const [showUsers, setShowUsers] = useState(false)
@@ -76,7 +77,7 @@ export default function Users({ setUserReserva, userReserva }) {
 
           {showUsers && (
             <>
-              <div className='p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
+              <div className=' p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
                 {userAccounts.map(({ email, password, invitado }, index) => (
                   <div key={index} className='items-center h-full w-full flex'>
                     <button
@@ -100,42 +101,39 @@ export default function Users({ setUserReserva, userReserva }) {
           )}
         </span>
 
-        <input
-          type='text'
-          placeholder='Email'
-          value={userReserva.email}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              email: e.target.value,
-            })
-          }
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
-        <input
-          type='text'
-          placeholder='Password'
-          value={userReserva.password}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              password: e.target.value,
-            })
-          }
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
-        <input
-          type='text'
-          value={userReserva.invitado}
-          onChange={(e) =>
-            setUserReserva({
-              ...userReserva,
-              invitado: e.target.value,
-            })
-          }
-          placeholder='Dni Del Invitado'
-          className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
-        />
+        <div className='w-full flex flex-col pt-5 gap-2'>
+          <Input
+            placeholder='Email'
+            value={userReserva.email}
+            onChange={(e) =>
+              setUserReserva({
+                ...userReserva,
+                email: e.target.value,
+              })
+            }
+          />
+          <Input
+            placeholder='Password'
+            value={userReserva.password}
+            onChange={(e) =>
+              setUserReserva({
+                ...userReserva,
+                password: e.target.value,
+              })
+            }
+          />
+          <Input
+            value={userReserva.invitado}
+            onChange={(e) =>
+              setUserReserva({
+                ...userReserva,
+                invitado: e.target.value,
+              })
+            }
+            placeholder='Dni Del Invitado'
+          />
+        </div>
+
         <Button color={'bg-[var(--primary-300)]'} onClick={handleSaveUser}>
           Guardar Usuario
         </Button>
@@ -152,18 +150,22 @@ export default function Users({ setUserReserva, userReserva }) {
           Limpiar
         </Button>
 
-        {msj && (
-          <div
-            className={`${
-              msj.includes('Error')
-                ? 'bg-red-950 text-red-200 border-red-500'
-                : 'bg-green-950 text-green-200 border-green-500'
-            } w-80  rounded-xl flex break-words border p-2`}
-          >
-            <p>{msj}</p>
-          </div>
-        )}
+        {msj && <MsjStatus message={msj}>{msj}</MsjStatus>}
       </section>
+    </>
+  )
+}
+
+export function Input({ placeholder, value, onChange }) {
+  return (
+    <>
+      <input
+        type='text'
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className='placeholder:text-[#c0478c] hover:brightness-110 w-full py-3 bg-[#55163a] border border-[#cc187e] text-white  p-2 rounded-xl'
+      />
     </>
   )
 }
