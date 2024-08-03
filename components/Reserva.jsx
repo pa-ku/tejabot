@@ -13,9 +13,10 @@ import MsjStatus from './MsjStatus'
 
 export default function ReservaButton() {
   const date = new Date()
-  const today = ((date.getDay() + 6) % 7) + 1 // Ajusta el índice para que el lunes sea 1
+  const timeZone = 'America/Argentina/Buenos_Aires'
+
+  const today = new Date(date.toLocaleString('en-US', { timeZone })).getDay()
   const tomorrow = (today % 7) + 1 // Calcula el siguiente día
-  const pasadoMañana = (tomorrow % 7) + 1 // Calcula el día después de mañana
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
