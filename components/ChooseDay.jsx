@@ -1,12 +1,7 @@
 'use client'
 import Radio from './ui/Radio'
 
-export default function ChooseDay({
-  setDiaReserva,
-  today,
-  tomorrow,
-  pasadoMañana,
-}) {
+export default function ChooseDay({ setDiaReserva }) {
   const daysOfWeek = [
     { day: 'lunes', value: 1 },
     { day: 'martes', value: 2 },

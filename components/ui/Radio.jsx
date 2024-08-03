@@ -3,13 +3,14 @@ export default function Radio({
   children,
   value,
   onChange,
-
+  disabled,
   defaultChecked,
 }) {
   return (
     <>
       <div className=' group flex items-center relative justify-center'>
         <input
+          disabled={disabled}
           onChange={onChange}
           name={name}
           className='hover:brightness-110 cursor-pointer w-full   absolute h-full appearance-none peer  '
@@ -18,7 +19,9 @@ export default function Radio({
           defaultChecked={defaultChecked}
         />
         <p
-          className={`text-sm w-full text-center duration-200  border-2 font-bold  bg-gray-800 rounded-xl peer-checked:bg-[#55163a] peer-checked:border-[#cc187e]  border-gray-700 px-4 text-white py-3 cursor-pointer `}
+          className={`${
+            disabled && ' text-red-500'
+          } text-sm w-full text-center duration-200  border-2 font-bold  bg-gray-800 rounded-xl peer-checked:bg-[#55163a] peer-checked:border-[#cc187e]  border-gray-700 px-4 text-white py-3 cursor-pointer `}
         >
           {children}
         </p>

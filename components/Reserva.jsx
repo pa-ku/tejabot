@@ -15,7 +15,6 @@ export default function ReservaButton() {
   const date = new Date()
   const today = date.getDay()
   const tomorrow = (today + 1) % 7
-  const pasadoMañana = (tomorrow + 1) % 7
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -151,12 +150,7 @@ export default function ReservaButton() {
 
       <Users setUserReserva={setUserReserva} userReserva={userReserva} />
 
-      <ChooseDay
-        setDiaReserva={setDiaReserva}
-        today={today}
-        tomorrow={tomorrow}
-        pasadoMañana={pasadoMañana}
-      />
+      <ChooseDay setDiaReserva={setDiaReserva} />
 
       <ChooseTime
         fcHorarios={setHorarios}
