@@ -25,6 +25,7 @@ export default function ChooseDay({
         <div className=' columns-2 space-y-2 column-gap  w-full uppercase'>
           {daysOfWeek.map(({ day, value }) => (
             <Radio
+              key={day}
               onChange={() => setDiaReserva(value)}
               name={'date'}
               value={value}
