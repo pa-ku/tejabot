@@ -154,8 +154,6 @@ export default function ReservaButton() {
       <ChooseDay
         setDiaReserva={setDiaReserva}
         today={today}
-        tomorrow={tomorrow}
-        pasadoMañana={pasadoMañana}
       />
 
       <ChooseTime
