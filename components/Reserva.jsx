@@ -19,7 +19,7 @@ export default function ReservaButton() {
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [diaReserva, setDiaReserva] = useState(tomorrow)
+  const [diaReserva, setDiaReserva] = useState()
   const [horarios, setHorarios] = useState([])
 
   const [canchaReserva, setCanchaReserva] = useState(3)
@@ -74,7 +74,9 @@ export default function ReservaButton() {
     ) {
       return setMessage('Error: Rellena la información del usuario')
     }
-
+    if (diaReserva == undefined) {
+      return setMessage('Error: Elige un dia para reservar')
+    }
     if (horarios.length < 1) {
       return setMessage('Error: Selecciona al menos un horario')
     }
@@ -154,6 +156,7 @@ export default function ReservaButton() {
       <ChooseDay
         setDiaReserva={setDiaReserva}
         today={today}
+        tomorrow={tomorrow}
       />
 
       <ChooseTime
