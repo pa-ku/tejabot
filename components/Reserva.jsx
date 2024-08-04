@@ -197,12 +197,13 @@ export default function ReservaButton() {
         alarmActive && 'pointer-events-none  '
       }  h-max w-80 flex items-start flex-col gap-10`}
     >
+      
       <Title>
         TejaB
         <svg
           className='inline animate-rotate'
-          width='44'
-          height='44'
+          width='38'
+          height='38'
           viewBox='0 0 24 24'
           stroke-width='2'
           stroke='#ffffff'
@@ -215,10 +216,12 @@ export default function ReservaButton() {
           <path d='M6 5.3a9 9 0 0 1 0 13.4' />
           <path d='M18 5.3a9 9 0 0 0 0 13.4' />
         </svg>
-        t🤖
+        t
       </Title>
       <span
-        className={`${loading && 'pointer-events-none grayscale'} duration-300`}
+        className={`${
+          loading && 'pointer-events-none grayscale'
+        } duration-300  h-max w-80 flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
 
@@ -250,7 +253,6 @@ export default function ReservaButton() {
         {loading && 'Reservando'}
         {alarmActive && 'Esperando Timer'}
       </button>
-
       {loading && (
         <div className='w-full flex items-center justify-center'>
           <div className='loader'></div>
@@ -263,7 +265,6 @@ export default function ReservaButton() {
           {timeMessage}
         </p>
       )}
-
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )
