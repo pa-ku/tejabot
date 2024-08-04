@@ -3,14 +3,16 @@ import { useState } from 'react'
 import Button from './ui/Button'
 import useLocalStorage from 'use-local-storage'
 import MsjStatus from './MsjStatus'
+import { dataUsers } from '@/data'
 
-export default function Users({ setUserReserva, userReserva }) {
+export default function Users({ setPostData, postData }) {
   const [showUsers, setShowUsers] = useState(false)
   const [userAccounts, setUserAccounts] = useLocalStorage('users', [])
   const [msj, setMsj] = useState('')
+  const [loadUsersCounter, setLoadUsersCounter] = useState(5)
 
   function handleSaveUser() {
-    const { email, password, invitado } = userReserva
+    const { email, password, dniInvitado } = postData
 
     if (email == '') {
       setMsj('Error: Rellena el email')
@@ -20,7 +22,7 @@ export default function Users({ setUserReserva, userReserva }) {
       setMsj('Error: Rellena la password')
       return
     }
-    if (invitado == '') {
+    if (dniInvitado == '') {
       setMsj('Error: Rellena el dni del invitado')
       return
     }
@@ -29,16 +31,17 @@ export default function Users({ setUserReserva, userReserva }) {
     const newUser = {
       email: email,
       password: password,
-      invitado: invitado,
+      dniInvitado: dniInvitado,
     }
 
     setUserAccounts((prevAccounts) => [...prevAccounts, newUser])
 
-    setUserReserva({
+    setPostData((prev) => ({
+      ...prev,
       email: '',
       password: '',
-      invitado: '',
-    })
+      dniInvitado: '',
+    }))
   }
   function handleDeleteUser(index) {
     setMsj('Usuario eliminado')
@@ -47,14 +50,23 @@ export default function Users({ setUserReserva, userReserva }) {
     )
   }
 
-  function handleSelectedUser({ email, password, invitado }) {
+  function handleSelectedUser({ email, password, dniInvitado }) {
     setShowUsers(false)
     setMsj('Usuario Cargado')
-    setUserReserva({
+    setPostData((prev) => ({
+      ...prev,
       email: email,
       password: password,
-      invitado: invitado,
-    })
+      dniInvitado: dniInvitado,
+    }))
+  }
+
+  function handleLoadUser() {
+    setLoadUsersCounter((prev) => prev - 1)
+    if (loadUsersCounter === 0) {
+      setUserAccounts(dataUsers)
+      setMsj('Usuarios de pablo cargados')
+    }
   }
 
   function handleShowUsers() {
@@ -67,7 +79,12 @@ export default function Users({ setUserReserva, userReserva }) {
   return (
     <>
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
-        <h2>Usuario</h2>
+        <button
+          className='text-lg text-start text-white w-full font-bold'
+          onClick={handleLoadUser}
+        >
+          Usuario
+        </button>
         <p className='description'>
           Los datos guardados se almacenan localmente
         </p>
@@ -78,11 +95,11 @@ export default function Users({ setUserReserva, userReserva }) {
           {showUsers && (
             <>
               <div className='duration-300 p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
-                {userAccounts.map(({ email, password, invitado }, index) => (
+                {userAccounts.map(({ email, password, dniInvitado }, index) => (
                   <div key={index} className='items-center h-full w-full flex'>
                     <button
                       onClick={() =>
-                        handleSelectedUser({ email, password, invitado })
+                        handleSelectedUser({ email, password, dniInvitado })
                       }
                       className='h-full rounded-l-md bg-gray-700 hover:brightness-110 p-2 pl-3 text-start w-full text-white '
                     >
@@ -104,31 +121,31 @@ export default function Users({ setUserReserva, userReserva }) {
         <div className='w-full flex flex-col pt-5 gap-2'>
           <Input
             placeholder='Email'
-            value={userReserva.email}
+            value={postData.email}
             onChange={(e) =>
-              setUserReserva({
-                ...userReserva,
+              setPostData((prev) => ({
+                ...prev,
                 email: e.target.value,
-              })
+              }))
             }
           />
           <Input
             placeholder='Password'
-            value={userReserva.password}
+            value={postData.password}
             onChange={(e) =>
-              setUserReserva({
-                ...userReserva,
+              setPostData((prev) => ({
+                ...prev,
                 password: e.target.value,
-              })
+              }))
             }
           />
           <Input
-            value={userReserva.invitado}
+            value={postData.dniInvitado}
             onChange={(e) =>
-              setUserReserva({
-                ...userReserva,
-                invitado: e.target.value,
-              })
+              setPostData((prev) => ({
+                ...prev,
+                dniInvitado: e.target.value,
+              }))
             }
             placeholder='Dni Del Invitado'
           />
@@ -140,11 +157,12 @@ export default function Users({ setUserReserva, userReserva }) {
         <Button
           color={'bg-gray-800'}
           onClick={() =>
-            setUserReserva({
+            setPostData((prev) => ({
+              ...prev,
               email: '',
               password: '',
-              invitado: '',
-            })
+              dniInvitado: '',
+            }))
           }
         >
           Limpiar

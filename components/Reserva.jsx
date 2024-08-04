@@ -12,31 +12,25 @@ import Checkbox from './ui/Checkbox'
 import MsjStatus from './MsjStatus'
 
 export default function ReservaButton() {
-  const date = new Date()
-  const timeZone = 'America/Argentina/Buenos_Aires'
-
-  const today = new Date(date.toLocaleString('en-US', { timeZone })).getDay()
-  const tomorrow = (today % 7) + 1 // Calcula el siguiente día
-
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [diaReserva, setDiaReserva] = useState()
-  const [horarios, setHorarios] = useState([])
-
-  const [canchaReserva, setCanchaReserva] = useState(3)
-  const [hasAlarm, setHasAlarm] = useState(false)
-  const [timerHr, setTimerHr] = useState(6)
-  const [timerMin, setTimerMin] = useState(5)
-  const [alarmActive, setAlarmActive] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(0)
-
-  const [userReserva, setUserReserva] = useState({
+  const [timeMessage, setTimeMessage] = useState('')
+  const [postData, setPostData] = useState({
     email: '',
     password: '',
-    invitado: '',
+    dniInvitado: '',
+    cancha: 3,
+    dia: undefined,
   })
+  const [horarios, setHorarios] = useState([])
+  const [timer, setTimer] = useState({
+    hasAlarm: false,
+    hr: 6,
+    min: 5,
+  })
+  const [alarmActive, setAlarmActive] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(0)
   const [isRetry, setIsRetry] = useState(false)
-
   const fetchCounterRef = useRef(0)
 
   useEffect(() => {
@@ -67,98 +61,108 @@ export default function ReservaButton() {
     })
   }
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
+  }
+
+  const performReserva = async () => {
+    setAlarmActive(false)
+    setLoading(true)
+    setTimeMessage('')
+    setMessage('')
+    try {
+      const response = await fetch('/api/reserva', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: postData.email,
+          password: postData.password,
+          dniInvitado: postData.dniInvitado,
+          dia: postData.dia,
+          cancha: postData.cancha,
+          hora: horarios,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setMessage(result.message)
+        fetchCounterRef.current = 0
+      } else {
+        setMessage('Error: ' + result.message)
+        if (isRetry) retryFetch()
+      }
+    } catch (error) {
+      setMessage('Error: No se pudo conectar con el servidor')
+      if (isRetry) retryFetch()
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleReserva = async () => {
     if (
-      userReserva.email == '' ||
-      userReserva.password == '' ||
-      userReserva.invitado == ''
+      postData.email === '' ||
+      postData.password === '' ||
+      postData.dniInvitado === ''
     ) {
       return setMessage('Error: Rellena la información del usuario')
     }
-    if (diaReserva == undefined) {
+    if (postData.dia === undefined) {
       return setMessage('Error: Elige un dia para reservar')
     }
     if (horarios.length < 1) {
       return setMessage('Error: Selecciona al menos un horario')
     }
 
-    const millisecondsUntilTarget = getMillisecondsUntil(timerHr, timerMin)
-    const secondsUntilTarget = millisecondsUntilTarget / 1000
-    setTimeLeft(secondsUntilTarget)
+    if (timer.hasAlarm) {
+      const millisecondsUntilTarget = getMillisecondsUntil(timer.hr, timer.min)
+      const secondsUntilTarget = millisecondsUntilTarget / 1000
+      setTimeLeft(secondsUntilTarget)
 
-    setMessage(
-      `De ${Math.floor(
-        secondsUntilTarget
-      )} Para ejecutar a las ${timerHr}:${timerMin} PM...`
-    )
-    setAlarmActive(true)
-    setTimeout(
-      async () => {
-        setAlarmActive(false)
-        setLoading(true)
-        setMessage('')
-
-        try {
-          const response = await fetch('/api/reserva', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: userReserva.email,
-              password: userReserva.password,
-              dniInvitado: userReserva.invitado,
-              dia: diaReserva,
-              cancha: canchaReserva,
-              hora: horarios,
-            }),
-          })
-
-          const result = await response.json()
-
-          if (response.ok) {
-            setMessage(result.message)
-            fetchCounterRef.current = 0
-          } else {
-            setMessage('Error: ' + result.message)
-            isRetry && retryFetch()
-          }
-        } catch (error) {
-          setMessage('Error: No se pudo conectar con el servidor')
-          isRetry && retryFetch()
-        } finally {
-          setLoading(false)
-        }
-      },
-      hasAlarm ? millisecondsUntilTarget : 0
-    )
+      setTimeMessage(
+        `De ${Math.floor(secondsUntilTarget)} Para ejecutar a las ${timer.hr}:${
+          timer.min
+        } PM...`
+      )
+      setAlarmActive(true)
+      setTimeout(() => {
+        performReserva()
+      }, millisecondsUntilTarget)
+    } else {
+      performReserva()
+    }
   }
 
   function retryFetch() {
     fetchCounterRef.current += 1
-    if (fetchCounterRef.current >= 3) {
-      setMessage('Error: No se pudo reservar luego de 3 intentos')
+    if (fetchCounterRef.current >= 4) {
+      setTimeMessage('Error: No se pudo reservar luego de 3 intentos')
       return
     } else {
-      setMessage(` Reintentando en 5 minutos...`)
-
+      setTimeMessage(` Reintentando en ${10000}ms...`)
       setTimeout(() => {
-        handleReserva()
-      }, 50000)
+        performReserva()
+      }, 10000)
     }
   }
 
   return (
-    <div className='h-max w-80 flex items-start flex-col gap-10'>
+    <div
+      className={`${alarmActive && 'pointer-events-none'} ${
+        loading && 'pointer-events-none'
+      } h-max w-80 flex items-start flex-col gap-10`}
+    >
       <Title>TejaBot🤖</Title>
 
-      <Users setUserReserva={setUserReserva} userReserva={userReserva} />
+      <Users setPostData={setPostData} postData={postData} />
 
-      <ChooseDay
-        setDiaReserva={setDiaReserva}
-        today={today}
-        tomorrow={tomorrow}
-      />
+      <ChooseDay setPostData={setPostData} />
 
       <ChooseTime
         fcHorarios={setHorarios}
@@ -166,16 +170,9 @@ export default function ReservaButton() {
         arrHorarios={horarios}
       />
 
-      <Court setCanchaReserva={setCanchaReserva}></Court>
+      <Court setPostData={setPostData}></Court>
 
-      <Timer
-        fcHasAlarm={setHasAlarm}
-        fcTimerMin={setTimerMin}
-        fcTimerHr={setTimerHr}
-        hasAlarm={hasAlarm}
-        timerHr={timerHr}
-        timerMin={timerMin}
-      ></Timer>
+      <Timer setTimer={setTimer} timer={timer}></Timer>
 
       <section>
         <Checkbox value={isRetry} onChange={() => setIsRetry(!isRetry)}>
@@ -188,7 +185,7 @@ export default function ReservaButton() {
       </section>
 
       <button
-        className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-100'
+        className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
         onClick={handleReserva}
         disabled={loading}
       >
@@ -202,10 +199,11 @@ export default function ReservaButton() {
           <div className='loader'></div>
         </div>
       )}
-      {message && (
-        <MsjStatus message={message}>
-          {alarmActive && Math.floor(timeLeft)} {message}
-        </MsjStatus>
+      {message && <MsjStatus message={message}>{message}</MsjStatus>}
+      {timeMessage && (
+        <p className='text-violet-400'>
+          {alarmActive && formatTime(timeLeft)} {timeMessage}
+        </p>
       )}
 
       <p className='text-violet-200 text-center w-full'>

@@ -2,7 +2,7 @@
 
 import Radio from './ui/Radio'
 
-export default function Court({ setCanchaReserva }) {
+export default function Court({ setPostData }) {
   return (
     <>
       <section className='flex w-full items-center flex-col justify-center gap-4'>
@@ -12,7 +12,7 @@ export default function Court({ setCanchaReserva }) {
             value={1}
             name='cancha'
             type={'radio'}
-            onChange={(e) => setCanchaReserva(1)}
+            onChange={(e) => setPostData((prev) => ({ ...prev, cancha: 1 }))}
           >
             C1
           </Radio>
@@ -20,7 +20,7 @@ export default function Court({ setCanchaReserva }) {
             value={2}
             name='cancha'
             type={'radio'}
-            onChange={(e) => setCanchaReserva(2)}
+            onChange={(e) => setPostData((prev) => ({ ...prev, cancha: 2 }))}
           >
             C2
           </Radio>
@@ -30,7 +30,7 @@ export default function Court({ setCanchaReserva }) {
             value={3}
             name='cancha'
             type={'radio'}
-            onChange={() => setCanchaReserva(3)}
+            onChange={(e) => setPostData((prev) => ({ ...prev, cancha: 3 }))}
           >
             Intentar Ambas
           </Radio>
