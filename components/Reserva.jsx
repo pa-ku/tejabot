@@ -233,7 +233,7 @@ export default function ReservaButton() {
           <ChooseTime
             setHorarios={setHorarios}
             handleHorario={handleHorario}
-            arrHorarios={horarios}
+            horarios={horarios}
           />
         }
 

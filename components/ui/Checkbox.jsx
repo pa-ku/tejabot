@@ -4,7 +4,6 @@ export default function Checkbox({
   checked,
   value,
   onChange,
-  array,
 }) {
   return (
     <>
@@ -12,7 +11,7 @@ export default function Checkbox({
         <input
           onChange={onChange}
           name={name}
-          checked={array ? array.includes(value) : checked}
+          checked={checked}
           className=' cursor-pointer w-full  absolute h-full appearance-none peer  '
           value={value}
           type={'checkbox'}
