@@ -197,7 +197,6 @@ export default function ReservaButton() {
         alarmActive && 'pointer-events-none  '
       }  h-max w-80 flex items-start flex-col gap-10`}
     >
-      
       <Title>
         TejaB
         <svg
@@ -205,11 +204,11 @@ export default function ReservaButton() {
           width='38'
           height='38'
           viewBox='0 0 24 24'
-          stroke-width='2'
+          strokeWidth='1.5'
           stroke='#ffffff'
           fill='none'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          strokeLinecap='round'
+          strokeLinejoin='round'
         >
           <path stroke='none' d='M0 0h24v24H0z' fill='none' />
           <path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0' />
@@ -217,6 +216,7 @@ export default function ReservaButton() {
           <path d='M18 5.3a9 9 0 0 0 0 13.4' />
         </svg>
         t
+        
       </Title>
       <span
         className={`${
