@@ -23,9 +23,7 @@ export default function ReservaButton() {
     cancha: 3,
     dia: undefined,
   })
-  const [horarios, setHorarios] = useLocalStorage('horarios', [
-    { name: '19 - 20', value: '19:00 - 20:00' },
-  ])
+  const [horarios, setHorarios] = useLocalStorage('horarios', [])
   const [timer, setTimer] = useLocalStorage('alarm', {
     hasAlarm: false,
     hr: 6,
@@ -229,13 +227,13 @@ export default function ReservaButton() {
 
         <ChooseDay postData={postData} setPostData={setPostData} />
 
-        {
+     
           <ChooseTime
             setHorarios={setHorarios}
             handleHorario={handleHorario}
             horarios={horarios}
           />
-        }
+
 
         <Court setPostData={setPostData}></Court>
 
