@@ -1,3 +1,5 @@
+import TimeInput from './ui/TimeInput'
+
 export default function Timer({ timer, setTimer }) {
   const { hr, min, hasAlarm } = timer
 
@@ -45,10 +47,7 @@ export default function Timer({ timer, setTimer }) {
           </span>
           {hasAlarm && (
             <>
-              <input
-                className=' font-bold text-center hover:brightness-110 w-16 text-white bg-[var(--primary-500)] p-2 rounded-xl '
-                type='number'
-                maxLength={1}
+              <TimeInput
                 placeholder='Hr'
                 value={hr}
                 title='horas'
@@ -56,9 +55,8 @@ export default function Timer({ timer, setTimer }) {
                   setTimer((prevTime) => ({ ...prevTime, hr: e.target.value }))
                 }
               />
-              <input
-                className='font-bold  text-center hover:brightness-110  w-16 text-white bg-[var(--primary-500)] p-2 rounded-xl '
-                type='number'
+
+              <TimeInput
                 value={min}
                 title='minutos'
                 onChange={(e) =>

@@ -8,8 +8,8 @@ import Timer from './Timer'
 import ChooseTime from './ChooseTime'
 import Users from './Users'
 import ChooseDay from './ChooseDay'
-import Checkbox from './ui/Checkbox'
 import MsjStatus from './MsjStatus'
+import Retry from './Retry'
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
@@ -32,6 +32,40 @@ export default function ReservaButton() {
   const [timeLeft, setTimeLeft] = useState(0)
   const [isRetry, setIsRetry] = useState(false)
   const fetchCounterRef = useRef(0)
+  const [retryConfig, setRetryConfig] = useState({
+    time: 60,
+    nOfRetry: 4,
+  })
+
+  const [timeToRetry, settimeToRetry] = useState(0)
+
+  useEffect(() => {
+    let timerRetry
+    if (timeToRetry > 0) {
+      timerRetry = setInterval(() => {
+        settimeToRetry((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRetry)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => clearInterval(timerRetry)
+  }, [timeToRetry])
+
+  function handleHorario(e) {
+    const value = e.target.value
+    setHorarios((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((hora) => hora !== value)
+      } else {
+        return [...prev, value]
+      }
+    })
+  }
 
   useEffect(() => {
     let timer
@@ -141,14 +175,19 @@ export default function ReservaButton() {
 
   function retryFetch() {
     fetchCounterRef.current += 1
-    if (fetchCounterRef.current >= 4) {
-      setTimeMessage('Error: No se pudo reservar luego de 3 intentos')
+    if (fetchCounterRef.current >= retryConfig.nOfRetry) {
+      setTimeMessage(
+        `Error: No se pudo reservar luego de ${retryConfig.nOfRetry} intentos`
+      )
       return
     } else {
-      setTimeMessage(` Reintentando en ${10000}ms...`)
+      settimeToRetry(retryConfig.time)
+      setTimeMessage(
+        ` Reintentando en ${retryConfig.time} segundos. Intentos restantes ${retryConfig.nOfRetry}`
+      )
       setTimeout(() => {
         performReserva()
-      }, 10000)
+      }, retryConfig.time * 1000)
     }
   }
 
@@ -165,7 +204,7 @@ export default function ReservaButton() {
       <ChooseDay setPostData={setPostData} />
 
       <ChooseTime
-        fcHorarios={setHorarios}
+        setHorarios={setHorarios}
         handleHorario={handleHorario}
         arrHorarios={horarios}
       />
@@ -174,15 +213,12 @@ export default function ReservaButton() {
 
       <Timer setTimer={setTimer} timer={timer}></Timer>
 
-      <section>
-        <Checkbox value={isRetry} onChange={() => setIsRetry(!isRetry)}>
-          Activar reintentos
-        </Checkbox>
-        <p className='description'>
-          Permite intentar nuevamente cada 5minutos si no se encuentra el turno,
-          hasta un maximo de 3 veces
-        </p>
-      </section>
+      <Retry
+        setRetryConfig={setRetryConfig}
+        retryConfig={retryConfig}
+        isRetry={isRetry}
+        setIsRetry={setIsRetry}
+      />
 
       <button
         className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
@@ -202,7 +238,7 @@ export default function ReservaButton() {
       {message && <MsjStatus message={message}>{message}</MsjStatus>}
       {timeMessage && (
         <p className='text-violet-400'>
-          {alarmActive && formatTime(timeLeft)} {timeMessage}
+          {alarmActive && formatTime(timeLeft)} {timeToRetry} {timeMessage}
         </p>
       )}
 
