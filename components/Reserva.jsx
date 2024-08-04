@@ -193,33 +193,54 @@ export default function ReservaButton() {
 
   return (
     <div
-      className={`${alarmActive && 'pointer-events-none'} ${
-        loading && 'pointer-events-none'
-      } h-max w-80 flex items-start flex-col gap-10`}
+      className={`${
+        alarmActive && 'pointer-events-none  '
+      }  h-max w-80 flex items-start flex-col gap-10`}
     >
-      <Title>TejaBot🤖</Title>
+      <Title>
+        TejaB
+        <svg
+          className='inline animate-rotate'
+          width='44'
+          height='44'
+          viewBox='0 0 24 24'
+          stroke-width='2'
+          stroke='#ffffff'
+          fill='none'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+        >
+          <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+          <path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0' />
+          <path d='M6 5.3a9 9 0 0 1 0 13.4' />
+          <path d='M18 5.3a9 9 0 0 0 0 13.4' />
+        </svg>
+        t🤖
+      </Title>
+      <span
+        className={`${loading && 'pointer-events-none grayscale'} duration-300`}
+      >
+        <Users setPostData={setPostData} postData={postData} />
 
-      <Users setPostData={setPostData} postData={postData} />
+        <ChooseDay setPostData={setPostData} />
 
-      <ChooseDay setPostData={setPostData} />
+        <ChooseTime
+          setHorarios={setHorarios}
+          handleHorario={handleHorario}
+          arrHorarios={horarios}
+        />
 
-      <ChooseTime
-        setHorarios={setHorarios}
-        handleHorario={handleHorario}
-        arrHorarios={horarios}
-      />
+        <Court setPostData={setPostData}></Court>
 
-      <Court setPostData={setPostData}></Court>
+        <Timer setTimer={setTimer} timer={timer}></Timer>
 
-      <Timer setTimer={setTimer} timer={timer}></Timer>
-
-      <Retry
-        setRetryConfig={setRetryConfig}
-        retryConfig={retryConfig}
-        isRetry={isRetry}
-        setIsRetry={setIsRetry}
-      />
-
+        <Retry
+          setRetryConfig={setRetryConfig}
+          retryConfig={retryConfig}
+          isRetry={isRetry}
+          setIsRetry={setIsRetry}
+        />
+      </span>
       <button
         className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
         onClick={handleReserva}
@@ -238,13 +259,12 @@ export default function ReservaButton() {
       {message && <MsjStatus message={message}>{message}</MsjStatus>}
       {timeMessage && (
         <p className='text-violet-400'>
-          {alarmActive && formatTime(timeLeft)} {timeToRetry} {timeMessage}
+          {alarmActive && formatTime(timeLeft)} {timeToRetry > 0 && timeToRetry}
+          {timeMessage}
         </p>
       )}
 
-      <p className='text-violet-200 text-center w-full'>
-        Made with 💜 by paku{' '}
-      </p>
+      <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )
 }
