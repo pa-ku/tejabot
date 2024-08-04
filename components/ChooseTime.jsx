@@ -17,24 +17,25 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
     { name: '18 - 19', value: '18:00 - 19:00' },
     { name: '19 - 20', value: '19:00 - 20:00' },
   ]
+  console.log(arrTime.length)
 
   return (
     <>
-      <section className=''>
+      <section>
         <h2>Horario</h2>
         <p className='description'>
           Elige los horarios en orden que se intentaran sacar, si no se
           encuentra uno disponible se intentara otro
         </p>
         <div className='grid grid-cols-3 gap-2 py-2'>
-          {arrTime.map((time) => (
+          {arrTime.map(({ name, value }) => (
             <Checkbox
-              key={time.value}
-              checked={horarios.includes(time.value)}
+              key={value}
+              checked={horarios.includes(value)}
               onChange={handleHorario}
-              value={time.value}
+              value={value}
             >
-              {time.name}
+              {name}
             </Checkbox>
           ))}
         </div>
@@ -43,13 +44,13 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
           Limpiar
         </Button>
         <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
-          {horarios.map((hora) => (
-            <div
-              key={hora}
-              className='text-xs bg-violet-950 text-white px-2 py-1 rounded-md'
+          {horarios.map((time) => (
+            <p
+              key={time}
+              className='bg-violet-950 text-white px-4 py-1 rounded-md'
             >
-              <p>{hora}</p>
-            </div>
+              {time}
+            </p>
           ))}
         </div>
       </section>

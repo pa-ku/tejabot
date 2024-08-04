@@ -16,27 +16,28 @@ export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [timeMessage, setTimeMessage] = useState('')
-  const [postData, setPostData] = useLocalStorage('postData', {
+  const [postData, setPostData] = useState({
     email: '',
     password: '',
     dniInvitado: '',
     cancha: 3,
     dia: undefined,
   })
-  const [horarios, setHorarios] = useLocalStorage('horarios', [])
-  const [timer, setTimer] = useLocalStorage('alarm', {
+  const [horarios, setHorarios] = useState([])
+  const [timer, setTimer] = useState({
     hasAlarm: false,
     hr: 6,
     min: 5,
   })
   const [alarmActive, setAlarmActive] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
-  const [isRetry, setIsRetry] = useLocalStorage('retry', false)
+  const [isRetry, setIsRetry] = useState(false)
   const fetchCounterRef = useRef(0)
-  const [retryConfig, setRetryConfig] = useLocalStorage('retryConfig', {
+  const [retryConfig, setRetryConfig] = useState({
     time: 60,
     nOfRetry: 4,
   })
+  console.log(horarios)
 
   const [timeToRetry, settimeToRetry] = useState(0)
 
@@ -218,7 +219,7 @@ export default function ReservaButton() {
         </svg>
         t
       </Title>
-      <span
+      <div
         className={`${
           loading && 'pointer-events-none grayscale'
         } duration-300  h-max w-80 flex items-start flex-col gap-10`}
@@ -227,13 +228,11 @@ export default function ReservaButton() {
 
         <ChooseDay postData={postData} setPostData={setPostData} />
 
-     
-          <ChooseTime
-            setHorarios={setHorarios}
-            handleHorario={handleHorario}
-            horarios={horarios}
-          />
-
+        <ChooseTime
+          setHorarios={setHorarios}
+          handleHorario={handleHorario}
+          horarios={horarios}
+        />
 
         <Court setPostData={setPostData}></Court>
 
@@ -245,7 +244,7 @@ export default function ReservaButton() {
           isRetry={isRetry}
           setIsRetry={setIsRetry}
         />
-      </span>
+      </div>
       <button
         className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
         onClick={handleReserva}
