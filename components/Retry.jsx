@@ -10,7 +10,7 @@ export default function Retry({
   return (
     <>
       <section className='w-full h-32 '>
-        <Checkbox value={isRetry} onChange={() => setIsRetry(!isRetry)}>
+        <Checkbox checked={isRetry} value={isRetry} onChange={() => setIsRetry(!isRetry)}>
           Activar Reintentos
         </Checkbox>
         {isRetry ? (

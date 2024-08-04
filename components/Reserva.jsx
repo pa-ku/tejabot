@@ -24,16 +24,16 @@ export default function ReservaButton() {
     dia: undefined,
   })
   const [horarios, setHorarios] = useLocalStorage('horarios', [{}])
-  const [timer, setTimer] = useState({
+  const [timer, setTimer] = useLocalStorage('alarm', {
     hasAlarm: false,
     hr: 6,
     min: 5,
   })
   const [alarmActive, setAlarmActive] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
-  const [isRetry, setIsRetry] = useState(false)
+  const [isRetry, setIsRetry] = useLocalStorage('retry', false)
   const fetchCounterRef = useRef(0)
-  const [retryConfig, setRetryConfig] = useState({
+  const [retryConfig, setRetryConfig] = useLocalStorage('retryConfig', {
     time: 60,
     nOfRetry: 4,
   })

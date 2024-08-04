@@ -1,11 +1,18 @@
-export default function Checkbox({ name, children, value, onChange, array }) {
+export default function Checkbox({
+  name,
+  children,
+  checked,
+  value,
+  onChange,
+  array,
+}) {
   return (
     <>
       <div className='flex items-center relative justify-center'>
         <input
           onChange={onChange}
           name={name}
-          checked={array && array.includes(value)}
+          checked={array ? array.includes(value) : checked}
           className=' cursor-pointer w-full  absolute h-full appearance-none peer  '
           value={value}
           type={'checkbox'}
