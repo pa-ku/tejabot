@@ -10,6 +10,7 @@ import Users from './Users'
 import ChooseDay from './ChooseDay'
 import MsjStatus from './MsjStatus'
 import Retry from './Retry'
+import useLocalStorage from 'use-local-storage'
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
@@ -22,7 +23,7 @@ export default function ReservaButton() {
     cancha: 3,
     dia: undefined,
   })
-  const [horarios, setHorarios] = useState([])
+  const [horarios, setHorarios] = useLocalStorage('horarios', [{}])
   const [timer, setTimer] = useState({
     hasAlarm: false,
     hr: 6,
@@ -216,7 +217,6 @@ export default function ReservaButton() {
           <path d='M18 5.3a9 9 0 0 0 0 13.4' />
         </svg>
         t
-        
       </Title>
       <span
         className={`${
@@ -227,11 +227,13 @@ export default function ReservaButton() {
 
         <ChooseDay setPostData={setPostData} />
 
-        <ChooseTime
-          setHorarios={setHorarios}
-          handleHorario={handleHorario}
-          arrHorarios={horarios}
-        />
+        {
+          <ChooseTime
+            setHorarios={setHorarios}
+            handleHorario={handleHorario}
+            arrHorarios={horarios}
+          />
+        }
 
         <Court setPostData={setPostData}></Court>
 

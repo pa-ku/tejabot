@@ -11,7 +11,7 @@ export default function Retry({
     <>
       <section className='w-full h-32 '>
         <Checkbox value={isRetry} onChange={() => setIsRetry(!isRetry)}>
-          Activar reintentos
+          Activar Reintentos
         </Checkbox>
         {isRetry ? (
           <div className='p-4 flex gap-2 items-center justify-center'>

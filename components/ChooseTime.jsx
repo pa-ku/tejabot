@@ -47,14 +47,15 @@ export default function ChooseTime({
           Limpiar
         </Button>
         <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
-          {arrHorarios.map((hora) => (
-            <p
-              key={hora}
-              className='text-xs bg-violet-950 text-white px-2 py-1 rounded-md'
-            >
-              {hora}
-            </p>
-          ))}
+          {
+            arrHorarios.map((hora) => (
+              <div
+                key={hora}
+                className='text-xs bg-violet-950 text-white px-2 py-1 rounded-md'
+              >
+                <p>{hora}</p>
+              </div>
+            ))}
         </div>
       </section>
     </>
