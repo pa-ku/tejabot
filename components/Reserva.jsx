@@ -16,7 +16,7 @@ export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [timeMessage, setTimeMessage] = useState('')
-  const [postData, setPostData] = useState({
+  const [postData, setPostData] = useLocalStorage('postData', {
     email: '',
     password: '',
     dniInvitado: '',
@@ -225,7 +225,7 @@ export default function ReservaButton() {
       >
         <Users setPostData={setPostData} postData={postData} />
 
-        <ChooseDay setPostData={setPostData} />
+        <ChooseDay postData={postData} setPostData={setPostData} />
 
         {
           <ChooseTime

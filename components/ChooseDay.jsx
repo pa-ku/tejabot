@@ -1,6 +1,6 @@
 import Radio from './ui/Radio'
 
-export default function ChooseDay({ setPostData }) {
+export default function ChooseDay({ setPostData, postData }) {
   const daysOfWeek = [
     { day: 'lunes', value: 1 },
     { day: 'martes', value: 2 },
@@ -23,6 +23,7 @@ export default function ChooseDay({ setPostData }) {
               onChange={() => setPostData((prev) => ({ ...prev, dia: value }))}
               name={'date'}
               value={value}
+              defaultChecked={value === postData.dia}
             >
               {day}
             </Radio>
