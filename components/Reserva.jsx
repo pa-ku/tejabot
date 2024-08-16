@@ -37,7 +37,6 @@ export default function ReservaButton() {
     time: 60,
     nOfRetry: 4,
   })
-  console.log(horarios)
 
   const [timeToRetry, settimeToRetry] = useState(0)
 

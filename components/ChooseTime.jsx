@@ -17,7 +17,7 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
     { name: '18 - 19', value: '18:00 - 19:00' },
     { name: '19 - 20', value: '19:00 - 20:00' },
   ]
-  console.log(arrTime.length)
+
 
   return (
     <>

@@ -151,29 +151,14 @@ export async function POST(req) {
     }
 
     await login(email, password)
-
     await goToReservas()
     await chooseDay(dia)
-
     await checkAvaliableTimes(dia, cancha)
-
     await fillForm(dniInvitado)
-
     await makeReservation()
-
     await checkResponse()
   } catch (error) {
-    return new Response(
-      JSON.stringify({
-        message: error.message || 'Error al realizar la reserva',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    throw new Error(error)
   } finally {
     if (browser) {
       await browser.close()
