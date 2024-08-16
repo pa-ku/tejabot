@@ -179,7 +179,7 @@ export async function POST(req) {
           message: 'Reserva realizada con exito! a padelear 💪',
         }),
         {
-          status: 500,
+          status: 200,
           headers: {
             'Content-Type': 'application/json',
           },
