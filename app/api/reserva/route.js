@@ -65,7 +65,7 @@ export async function POST(req) {
       console.log('Verificando si ya hay una reserva...')
       const checkAlreadyReserve = await page
         .waitForSelector('div[class="modal inmodal in"]', {
-          timeout: 500,
+          timeout: 1500,
         })
         .catch(() => null)
       if (checkAlreadyReserve) {
@@ -85,7 +85,7 @@ export async function POST(req) {
         for (const horario of hora) {
           try {
             const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-            await page.waitForSelector(horarioSelector, { timeout: 5000 })
+            await page.waitForSelector(horarioSelector, { timeout: 1500 })
 
             const listaHorarios = await page.$$(horarioSelector + ' > li')
 
