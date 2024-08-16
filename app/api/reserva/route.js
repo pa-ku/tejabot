@@ -29,7 +29,6 @@ export async function POST(req) {
     }
 
     const page = await browser.newPage()
-    await confirmAlert(page)
 
     try {
       await page.goto('https://reservar.serviciosmerlo.online/login')
@@ -126,18 +125,28 @@ export async function POST(req) {
 
     async function makeReservation() {
       try {
+        await confirmAlert(page)
         await new Promise((r) => setTimeout(r, 1000))
         await page.click('button[id="btn-id-persona"]')
         await page.click('button[id="btn-id-reserva"]')
         await new Promise((r) => setTimeout(r, 1000))
-
-        await page.screenshot({ path: `public/reserva.png` })
-
-        if (await page.type('button[class="confirm"]')) {
-          throw new Error('Ya sacaste turno con tu provedor de internet')
-        }
       } catch (err) {
-        throw new Error('Ya sacaste turno con tu provedor de internet')
+        throw new Error(err)
+      }
+    }
+    async function checkResponse() {
+      await page.screenshot({ path: `public/reserva.png` })
+      const popUp = await page.$(
+        'div[class="sweet-alert showSweetAlert visible"]'
+      )
+      if (popUp) {
+        const paragraphText = await page.$eval(
+          'p[style="display: block;"]',
+          (el) => el.textContent
+        )
+        throw new Error(paragraphText)
+      } else {
+        throw new Response('Reserva realizada con exito!')
       }
     }
 
@@ -152,15 +161,7 @@ export async function POST(req) {
 
     await makeReservation()
 
-    return new Response(
-      JSON.stringify({ message: 'Reserva realizada con éxito' }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    await checkResponse()
   } catch (error) {
     return new Response(
       JSON.stringify({
