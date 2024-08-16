@@ -10,7 +10,8 @@ import Users from './Users'
 import ChooseDay from './ChooseDay'
 import MsjStatus from './MsjStatus'
 import Retry from './Retry'
-import useLocalStorage from 'use-local-storage'
+import Image from 'next/image'
+import imgStatus from '../image/reserva.png'
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
@@ -27,7 +28,7 @@ export default function ReservaButton() {
   const [timer, setTimer] = useState({
     hasAlarm: false,
     hr: 6,
-    min: 5,
+    min: 0,
   })
   const [alarmActive, setAlarmActive] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
@@ -57,17 +58,6 @@ export default function ReservaButton() {
     return () => clearInterval(timerRetry)
   }, [timeToRetry])
 
-  function handleHorario(e) {
-    const value = e.target.value
-    setHorarios((prev) => {
-      if (prev.includes(value)) {
-        return prev.filter((hora) => hora !== value)
-      } else {
-        return [...prev, value]
-      }
-    })
-  }
-
   useEffect(() => {
     let timer
     if (alarmActive && timeLeft > 0) {
@@ -84,6 +74,17 @@ export default function ReservaButton() {
 
     return () => clearInterval(timer)
   }, [alarmActive, timeLeft])
+
+  function handleHorario(e) {
+    const value = e.target.value
+    setHorarios((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((hora) => hora !== value)
+      } else {
+        return [...prev, value]
+      }
+    })
+  }
 
   function handleHorario(e) {
     const value = e.target.value
@@ -124,16 +125,20 @@ export default function ReservaButton() {
       })
 
       const result = await response.json()
+      console.log(result)
 
       if (response.ok) {
-        setMessage(result.message)
+        setMessage(result)
+        console.log('res ok, response' + result)
+
         fetchCounterRef.current = 0
       } else {
-        setMessage('Error: ' + result.message)
+        console.log(result)
+        setMessage('Error: ' + result.error)
         if (isRetry) retryFetch()
       }
     } catch (error) {
-      setMessage('Error: No se pudo conectar con el servidor')
+      setMessage('hubo un problema en la peticion: ' + error)
       if (isRetry) retryFetch()
     } finally {
       setLoading(false)
@@ -265,6 +270,13 @@ export default function ReservaButton() {
           {timeMessage}
         </p>
       )}
+
+      <Image
+        src={imgStatus}
+        width={400}
+        height={400}
+        alt='Estado de la peticion'
+      />
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )

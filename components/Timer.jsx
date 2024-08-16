@@ -47,22 +47,20 @@ export default function Timer({ timer, setTimer }) {
           </span>
           {hasAlarm && (
             <>
-              <TimeInput
-                placeholder='Hr'
-                value={hr}
-                title='horas'
-                onChange={(e) =>
-                  setTimer((prevTime) => ({ ...prevTime, hr: e.target.value }))
-                }
-              />
-
-              <TimeInput
-                value={min}
-                title='minutos'
-                onChange={(e) =>
-                  setTimer((prevTime) => ({ ...prevTime, min: e.target.value }))
-                }
-                placeholder='Min'
+              <input
+                className='bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
+                type='time'
+                value={`${hr.toString().padStart(2, '0')}:${min
+                  .toString()
+                  .padStart(2, '0')}`}
+                onChange={(e) => {
+                  const [newHr, newMin] = e.target.value.split(':')
+                  setTimer((prevTime) => ({
+                    ...prevTime,
+                    hr: newHr,
+                    min: newMin,
+                  }))
+                }}
               />
             </>
           )}

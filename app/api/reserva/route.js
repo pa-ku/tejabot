@@ -2,24 +2,25 @@ import { confirmAlert } from '@/utils/confirmAlert'
 import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 import chromium from '@sparticuz/chromium'
+import { NextResponse } from 'next/server'
+
 export async function POST(req) {
   let browser
 
   try {
-    const { email, password, dniInvitado, dia, cancha, hora } = await req.json()
+    const requestBody = await req.json()
+    console.log(requestBody)
+
+    const { email, password, dniInvitado, dia, cancha, hora } = requestBody
 
     const isDevelopment = process.env.NODE_ENV === 'development'
 
     if (isDevelopment) {
-      // En desarrollo, usa Puppeteer directamente
-
       browser = await puppeteer.launch({
         headless: false,
         slowMo: 5,
       })
     } else {
-      // En producción, usa Puppeteer Core con Chromium
-
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -43,32 +44,36 @@ export async function POST(req) {
         await page.type('input[id="inputEmail"]', email)
         await page.type('input[id="inputPassword"]', password)
         await page.click('button[class="btn btn-primary block full-width m-b"]')
+        console.log('Login 🆗')
       } catch (err) {
-        throw new Error(err + ' No se pudo iniciar sesión')
+        throw new Error('No se pudo iniciar sesión: ' + err.message)
       }
     }
+
     async function chooseDay(dia) {
       try {
         const daySelector = `#li-dia-${dia} a`
         await page.waitForSelector(daySelector)
         await page.click(daySelector)
+        console.log('Choose day 🆗')
       } catch (err) {
         throw new Error('No se pudo seleccionar el día ' + dia)
       }
     }
 
-    async function goToReservas() {
-      try {
-        await page.waitForSelector('a[href="#"]')
-        await page.click('a[href="#"]')
-        await page.waitForSelector(
-          '#side-menu > li:nth-child(4) > ul > li:first-child > a'
-        )
-        await page.click(
-          '#side-menu > li:nth-child(4) > ul > li:first-child > a'
-        )
-      } catch (err) {
-        throw new Error('No se pudo navegar a la sección de reservas')
+    async function checkReservation() {
+      console.log('Verificando si ya hay una reserva...')
+      const checkAlreadyReserve = await page
+        .waitForSelector('div[class="modal inmodal in"]', {
+          timeout: 500,
+        })
+        .catch(() => null)
+      if (checkAlreadyReserve) {
+        await page.screenshot({ path: `image/reserva.png` })
+        console.log('Reserva encontrada 🆗')
+        return true
+      } else {
+        return false
       }
     }
 
@@ -86,7 +91,6 @@ export async function POST(req) {
 
             for (let hora of listaHorarios) {
               const text = await page.evaluate((el) => el.textContent, hora)
-
               if (text.includes(horario)) {
                 const aTag = await hora.$('a.alert-link')
                 if (aTag) {
@@ -99,11 +103,10 @@ export async function POST(req) {
 
             if (horarioEncontrado) break
           } catch (error) {
-            console.error('Error al intentar seleccionar el horario:', error)
-            // Continúa con el siguiente horario en caso de error
+            throw new Error('Error al buscar horarios: ' + error.message)
           }
         }
-
+        console.log('Check horarios 🆗')
         if (horarioEncontrado) break
       }
 
@@ -118,8 +121,9 @@ export async function POST(req) {
       try {
         await page.click('input[id="input-dni"]')
         await page.type('input[id="input-dni"]', dniInvitado)
+        console.log('fill form 🆗')
       } catch (err) {
-        throw new Error(err + ' Error al agregar el invitado ')
+        throw new Error('Error al llenar el formulario: ' + err.message)
       }
     }
 
@@ -130,35 +134,87 @@ export async function POST(req) {
         await page.click('button[id="btn-id-persona"]')
         await page.click('button[id="btn-id-reserva"]')
         await new Promise((r) => setTimeout(r, 1000))
+        await page.screenshot({ path: `image/reserva.png` })
+        console.log('Make reservation 🆗')
       } catch (err) {
-        throw new Error(err)
-      }
-    }
-    async function checkResponse() {
-      await page.screenshot({ path: `public/reserva.png` })
-      const popUp = await page.$(
-        'div[class="sweet-alert showSweetAlert visible"]'
-      )
-      if (popUp) {
-        const paragraphText = await page.$eval(
-          'p[style="display: block;"]',
-          (el) => el.textContent
-        )
-        throw new Error(paragraphText)
-      } else {
-        throw new Response('Reserva realizada con exito!')
+        throw new Error('Error al realizar la reserva: ' + err.message)
       }
     }
 
+    async function checkResponse() {
+      try {
+        await page.screenshot({ path: `image/reserva.png` })
+        const checkPopUp = await page.$(
+          'div[class="sweet-alert showSweetAlert visible"]'
+        )
+        const checkAlreadyReserve = await page.$('div[class="modal-body"]')
+
+        if (checkPopUp) {
+          console.log('Leyendo el popup🆗')
+          const paragraphText = await page.$eval(
+            'p[style="display: block;"]',
+            (el) => el.textContent
+          )
+          throw new Error(paragraphText)
+        } else if (checkAlreadyReserve) {
+          console.log('Reserva ya existente 🆗')
+        }
+      } catch (error) {
+        console.log(error)
+
+        throw new Error('Error en checkResponse: ' + error.message)
+      }
+    }
+
+    // Ejecución del flujo de reserva
     await login(email, password)
-    await goToReservas()
+
+    const hasReservation = await checkReservation()
+    if (hasReservation) {
+      return new Response(
+        JSON.stringify({ message: 'Ya tienes una reserva activa' }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    }
+
+    console.log('No tiene reserva, se continúa 🆗')
+    await page.waitForSelector('a[href="#"]')
+    await page.click('a[href="#"]')
+    await page.waitForSelector(
+      '#side-menu > li:nth-child(4) > ul > li:first-child > a'
+    )
+    await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
+
     await chooseDay(dia)
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
-    await checkResponse()
+    const responseMessage = await checkResponse()
+
+    return new Response(
+      JSON.stringify({
+        message: responseMessage || 'Reserva realizada con éxito',
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
   } catch (error) {
-    throw new Error(error)
+    console.log(error.message)
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   } finally {
     if (browser) {
       await browser.close()
