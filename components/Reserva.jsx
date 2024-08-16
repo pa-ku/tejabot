@@ -125,20 +125,17 @@ export default function ReservaButton() {
       })
 
       const result = await response.json()
-      console.log(result)
 
       if (response.ok) {
-        setMessage(result)
+        setMessage('Reserva realizada con exito! a padelear 💪')
         console.log('res ok, response' + result)
-
         fetchCounterRef.current = 0
       } else {
-        console.log(result)
         setMessage('Error: ' + result.error)
         if (isRetry) retryFetch()
       }
     } catch (error) {
-      setMessage('hubo un problema en la peticion: ' + error)
+      setMessage(`hubo un problema en la peticion: ${error}`)
       if (isRetry) retryFetch()
     } finally {
       setLoading(false)

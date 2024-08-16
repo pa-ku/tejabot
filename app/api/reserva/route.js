@@ -112,7 +112,7 @@ export async function POST(req) {
 
       if (!horarioEncontrado) {
         throw new Error(
-          'Ninguno de los horarios disponibles pudo ser reservado'
+          'Ninguno de los horarios elegidos se encuentra disponible'
         )
       }
     }
@@ -141,45 +141,12 @@ export async function POST(req) {
       }
     }
 
-    async function checkResponse() {
-      try {
-        await page.screenshot({ path: `image/reserva.png` })
-        const checkPopUp = await page.$(
-          'div[class="sweet-alert showSweetAlert visible"]'
-        )
-        const checkAlreadyReserve = await page.$('div[class="modal-body"]')
-
-        if (checkPopUp) {
-          console.log('Leyendo el popup🆗')
-          const paragraphText = await page.$eval(
-            'p[style="display: block;"]',
-            (el) => el.textContent
-          )
-          throw new Error(paragraphText)
-        } else if (checkAlreadyReserve) {
-          console.log('Reserva ya existente 🆗')
-        }
-      } catch (error) {
-        console.log(error)
-
-        throw new Error('Error en checkResponse: ' + error.message)
-      }
-    }
-
     // Ejecución del flujo de reserva
     await login(email, password)
 
     const hasReservation = await checkReservation()
     if (hasReservation) {
-      return new Response(
-        JSON.stringify({ message: 'Ya tienes una reserva activa' }),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
+      throw new Error('Ya tenes una reserva realizada')
     }
 
     console.log('No tiene reserva, se continúa 🆗')
@@ -194,19 +161,31 @@ export async function POST(req) {
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
-    const responseMessage = await checkResponse()
 
-    return new Response(
-      JSON.stringify({
-        message: responseMessage || 'Reserva realizada con éxito',
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+    await page.screenshot({ path: `image/reserva.png` })
+    const checkPopUp = await page.$(
+      'div[class="sweet-alert showSweetAlert visible"]'
     )
+    if (checkPopUp) {
+      console.log('Leyendo el popup🆗')
+      const paragraphText = await page.$eval(
+        'p[style="display: block;"]',
+        (el) => el.textContent
+      )
+      throw new Error(paragraphText)
+    } else {
+      return new Response(
+        JSON.stringify({
+          message: 'Reserva realizada con exito! a padelear 💪',
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    }
   } catch (error) {
     console.log(error.message)
     return new Response(JSON.stringify({ error: error.message }), {
