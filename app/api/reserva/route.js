@@ -85,7 +85,7 @@ export async function POST(req) {
         for (const horario of hora) {
           try {
             const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-            await page.waitForSelector(horarioSelector, { timeout: 1500 })
+            await page.waitForSelector(horarioSelector, { timeout: 5000 })
 
             const listaHorarios = await page.$$(horarioSelector + ' > li')
 
