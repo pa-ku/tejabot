@@ -268,13 +268,12 @@ export default function ReservaButton() {
         </p>
       )}
 
-      {/*      
-        <Image
-          src={imgStatus}
-          width={400}
-          height={400}
-          alt='Estado de la peticion'
-        /> */}
+      <Image
+        src={imgStatus}
+        width={400}
+        height={400}
+        alt='Estado de la peticion'
+      />
 
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
