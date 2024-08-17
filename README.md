@@ -11,9 +11,9 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 3. Elige tus opciones para la reserva y  Presiona "Reservar"
 4. Mira como el bot trabaja por el salario minimo!
 
-- Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
+- Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
+- 
 ## Features
-
 - Retry: Cuando esta activo intenta volver a realizar la peticion en el tiempo y cantidad indicado
 - Canchas: te permite validar si una cancha tiene el turno disponible, sino intentara en la otra
 - Horarios: al poder elegir varios horarios te asegura obtener el que este disponible sin tener que reacer la petición
