@@ -1,6 +1,7 @@
 # TejaBot 🤖
 
-Te permite desde una inteface crear una petición con timer, para reservar canchas en el tejadito
+### La manera mas sencilla para no volverse loco intentando hacer una reserva
+Ejemplo de uso:
 
 https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 
@@ -11,7 +12,7 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 3. Elige tus opciones para la reserva y presiona **"Reservar"**
 4. Mira como el bot trabaja por el salario minimo!
 
-- Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
+- Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador chrome, no lo cierres, el bot ira haciendo su trabajo automaticamente
 
 ## Features
 - **Canchas:** te permite validar si una cancha esta disponible, sino intentara en la otra
