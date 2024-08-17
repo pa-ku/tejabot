@@ -6,8 +6,8 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 
 ## Uso
 
-1. Instalar Node: https://nodejs.org/en Ejecuta 
-2. Ejecutar `npm run dev`, e ir a http://localhost:3000
+1. Instalar Node: <a href="" target="_blank">https://nodejs.org/en </a> 
+2. Ejecutar `npm run dev`, e ir a <a href="" target="_blank">http://localhost:3000</a>  
 3. Elige tus opciones para la reserva
 4. Presiona "Reservar"
 5. Mira como el bot trabaja por el salario minimo!
