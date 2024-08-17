@@ -7,8 +7,12 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 
 ## Uso
 
-1. Tener instalado NodeJs: <a href="" target="_blank">https://nodejs.org/en </a> 
-2. Ejecutar `npm install` y luego `npm run dev`,
+1. Tener instalado NodeJs: <a href="" target="_blank">https://nodejs.org/en </a>
+2. Clonar la repo 
+```
+git clone https://github.com/@username/tejabot.git
+```
+3. Ejecutar `npm install` y luego `npm run dev`,
 4. Navegar a <a href="" target="_blank">http://localhost:3000</a>  
 5. Elige tus opciones para la reserva y presiona **"Reservar"**
 6. Mira como el bot trabaja por el salario minimo!
