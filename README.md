@@ -8,9 +8,8 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 
 1. Instalar Node: <a href="" target="_blank">https://nodejs.org/en </a> 
 2. Ejecutar `npm run dev`, e ir a <a href="" target="_blank">http://localhost:3000</a>  
-3. Elige tus opciones para la reserva
-4. Presiona "Reservar"
-5. Mira como el bot trabaja por el salario minimo!
+3. Elige tus opciones para la reserva y  Presiona "Reservar"
+4. Mira como el bot trabaja por el salario minimo!
 
 - Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
 ## Features
