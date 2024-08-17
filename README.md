@@ -2,6 +2,8 @@
 
 Te permite desde una inteface crear una petición con timer, para reservar canchas en el tejadito
 
+https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
+
 ## Uso
 
 1. Ejecuta `npm run dev` 
