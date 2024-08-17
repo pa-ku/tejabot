@@ -80,12 +80,12 @@ export async function POST(req) {
     async function checkAvaliableTimes(dia, cancha) {
       let horarioEncontrado = false
       const canchas = cancha === 3 ? [1, 2] : [cancha]
-
+      console.log('Buscando si existe el horario 🆗')
       for (const cancha of canchas) {
         for (const horario of hora) {
           try {
             const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-            await page.waitForSelector(horarioSelector, { timeout: 5000 })
+            await page.waitForSelector(horarioSelector, { timeout: 1000 })
 
             const listaHorarios = await page.$$(horarioSelector + ' > li')
 
@@ -103,7 +103,7 @@ export async function POST(req) {
 
             if (horarioEncontrado) break
           } catch (error) {
-            throw new Error('Error al buscar horarios: ' + error.message)
+            console.log(`Buscando el siguiente horario:  ${horario}`)
           }
         }
         console.log('Check horarios 🆗')
