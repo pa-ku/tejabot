@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/d15e318f-02b9-4e2a-85a9-51d02e1d5818
 4. Presiona "Reservar"
 5. Mira como el bot trabaja por el salario minimo!
 
-//Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
+- Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
 ## Features
 
 - Retry: Cuando esta activo intenta volver a realizar la peticion en el tiempo y cantidad indicado
