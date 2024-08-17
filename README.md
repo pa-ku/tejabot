@@ -4,13 +4,13 @@ Te permite desde una inteface crear una petición con timer, para reservar canch
 
 ## Uso
 
-1. Ejecuta npm run dev 
+1. Ejecuta `npm run dev` 
 2. Ve a http://localhost:3000
 3. Elige tus opciones para la reserva
 4. Presiona "Reservar"
 5. Mira como el bot trabaja por el salario minimo!
 
-`Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar`
+//Al iniciar el proceso de reserva se abrira una nueva pestaña de un navegador de chrome, no lo cierres, el bot ira siguiendo los pasos solo para completar
 ## Features
 
 - Retry: Cuando esta activo intenta volver a realizar la peticion en el tiempo y cantidad indicado
