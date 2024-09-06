@@ -209,7 +209,7 @@ export default function ReservaButton() {
           height='50'
           viewBox='0 0 24 24'
           strokeWidth='1.5'
-          stroke='#ffffff'
+          stroke='#f83596'
           fill='none'
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -246,20 +246,20 @@ export default function ReservaButton() {
           isRetry={isRetry}
           setIsRetry={setIsRetry}
         />
-      <div className='w-full space-y-2'>
-        <button
-          className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-yellow-50'
-          onClick={handleReserva}
-          disabled={loading}
-        >
-          {!loading && !alarmActive && 'Reservar'}
-          {loading && 'Reservando'}
-          {alarmActive && 'Esperando Timer'}
-        </button>
-        {message && (
-          <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
-        )}
-      </div>
+        <div className='w-full space-y-2'>
+          <button
+            className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-yellow-50'
+            onClick={handleReserva}
+            disabled={loading}
+          >
+            {!loading && !alarmActive && 'Reservar'}
+            {loading && 'Reservando'}
+            {alarmActive && 'Esperando Timer'}
+          </button>
+          {message && (
+            <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
+          )}
+        </div>
       </div>
       {loading && (
         <div className='w-full flex items-center justify-center'>
