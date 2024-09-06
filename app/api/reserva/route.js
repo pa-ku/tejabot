@@ -69,7 +69,6 @@ export async function POST(req) {
         })
         .catch(() => null)
       if (checkAlreadyReserve) {
-        await page.screenshot({ path: `image/reserva.png` })
         console.log('Reserva encontrada 🆗')
         return true
       } else {
@@ -134,7 +133,6 @@ export async function POST(req) {
         await page.click('button[id="btn-id-persona"]')
         await page.click('button[id="btn-id-reserva"]')
         await new Promise((r) => setTimeout(r, 1000))
-        await page.screenshot({ path: `image/reserva.png` })
 
         console.log('Make reservation 🆗')
       } catch (err) {
@@ -162,8 +160,6 @@ export async function POST(req) {
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
-
-    await page.screenshot({ path: `image/reserva.png` })
     const checkPopUp = await page.$(
       'div[class="sweet-alert showSweetAlert visible"]'
     )

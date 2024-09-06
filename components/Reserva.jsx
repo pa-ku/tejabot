@@ -10,8 +10,7 @@ import Users from './Users'
 import ChooseDay from './ChooseDay'
 import MsjStatus from './MsjStatus'
 import Retry from './Retry'
-import Image from 'next/image'
-import imgStatus from '../image/reserva.png'
+
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
@@ -267,13 +266,6 @@ export default function ReservaButton() {
           {timeMessage}
         </p>
       )}
-
-      <Image
-        src={imgStatus}
-        width={400}
-        height={400}
-        alt='Estado de la peticion'
-      />
 
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
