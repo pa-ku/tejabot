@@ -224,7 +224,7 @@ export default function ReservaButton() {
       <div
         className={`${
           loading && 'pointer-events-none grayscale'
-        } px-4 duration-300  h-max flex items-start flex-col gap-10`}
+        } px-4 lg:px-0 duration-300  h-max flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
 
@@ -240,12 +240,12 @@ export default function ReservaButton() {
 
         <Timer setTimer={setTimer} timer={timer}></Timer>
 
-        <Retry
+        {/* <Retry
           setRetryConfig={setRetryConfig}
           retryConfig={retryConfig}
           isRetry={isRetry}
           setIsRetry={setIsRetry}
-        />
+        /> */}
         <div className='w-full space-y-2'>
           <button
             className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-yellow-50'
