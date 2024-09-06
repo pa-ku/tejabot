@@ -8,13 +8,13 @@ import Timer from './Timer'
 import ChooseTime from './ChooseTime'
 import Users from './Users'
 import ChooseDay from './ChooseDay'
-import MsjStatus from './MsjStatus'
 import Retry from './Retry'
 
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+
   const [timeMessage, setTimeMessage] = useState('')
+  const [message, setMessage] = useState('')
   const [postData, setPostData] = useState({
     email: '',
     password: '',
@@ -36,7 +36,7 @@ export default function ReservaButton() {
     time: 60,
     nOfRetry: 4,
   })
-  const [logs, setLogs] = useState([''])
+  const [logs, setLogs] = useState([])
 
   const [timeToRetry, settimeToRetry] = useState(0)
 
@@ -125,19 +125,18 @@ export default function ReservaButton() {
       })
 
       const result = await response.json()
-      console.log(result.logs)
-
       setLogs(result.logs)
 
       if (response.ok) {
-        setMessage('Reserva realizada con exito! a padelear 💪')
+        console.log(result)
+
         fetchCounterRef.current = 0
       } else {
-        setMessage('Error: ' + result.error)
+        console.log(result)
         if (isRetry) retryFetch()
       }
     } catch (error) {
-      setMessage(`hubo un problema en la peticion: ${error}`)
+      console.log(error)
       if (isRetry) retryFetch()
     } finally {
       setLoading(false)
@@ -150,13 +149,13 @@ export default function ReservaButton() {
       postData.password === '' ||
       postData.dniInvitado === ''
     ) {
-      return setMessage('Error: Rellena la información del usuario')
+      return setMessage(' Rellena la información del usuario')
     }
     if (postData.dia === undefined) {
-      return setMessage('Error: Elige un dia para reservar')
+      return setMessage(' Elige un dia para reservar')
     }
     if (horarios.length < 1) {
-      return setMessage('Error: Selecciona al menos un horario')
+      return setMessage(' Selecciona al menos un horario')
     }
 
     if (timer.hasAlarm) {
@@ -200,14 +199,14 @@ export default function ReservaButton() {
     <div
       className={`${
         alarmActive && 'pointer-events-none  '
-      }  h-max w-80 flex items-start flex-col gap-10`}
+      }  h-max w-full md:w-80 flex items-start flex-col gap-10`}
     >
       <Title>
         TejaB
         <svg
           className='inline animate-rotate'
-          width='38'
-          height='38'
+          width='50'
+          height='50'
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='#ffffff'
@@ -225,7 +224,7 @@ export default function ReservaButton() {
       <div
         className={`${
           loading && 'pointer-events-none grayscale'
-        } duration-300  h-max w-80 flex items-start flex-col gap-10`}
+        } duration-300  h-max flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
 
@@ -248,15 +247,20 @@ export default function ReservaButton() {
           setIsRetry={setIsRetry}
         />
       </div>
-      <button
-        className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
-        onClick={handleReserva}
-        disabled={loading}
-      >
-        {!loading && !alarmActive && 'Reservar'}
-        {loading && 'Reservando'}
-        {alarmActive && 'Esperando Timer'}
-      </button>
+      <div className='w-full space-y-2'>
+        <button
+          className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
+          onClick={handleReserva}
+          disabled={loading}
+        >
+          {!loading && !alarmActive && 'Reservar'}
+          {loading && 'Reservando'}
+          {alarmActive && 'Esperando Timer'}
+        </button>
+        {message && (
+          <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
+        )}
+      </div>
       {loading && (
         <div className='w-full flex items-center justify-center'>
           <div className='loader'></div>
@@ -269,18 +273,20 @@ export default function ReservaButton() {
         </p>
       )}
 
-      <div className='border-2 space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
-        {logs.map((log, index) => (
-          <p
-            className={`${log.includes('❌') && 'text-red-400'} ${
-              log.includes('✅') && 'text-green-300'
-            }`}
-            key={log}
-          >
-            <span className='text-gray-600'>{index}:</span> {log}
-          </p>
-        ))}
-      </div>
+      {logs.length > 0 && (
+        <div className='border-2 space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
+          {logs.map((log, index) => (
+            <p
+              className={`${log.includes('❌') && 'text-red-400'} ${
+                log.includes('✅') && 'text-green-300'
+              }`}
+              key={log}
+            >
+              <span className='text-gray-600'>{index}:</span> {log}
+            </p>
+          ))}
+        </div>
+      )}
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )
