@@ -267,7 +267,7 @@ export default function ReservaButton() {
         </div>
       )}
       {timeMessage && (
-        <p className='text-violet-400'>
+        <p className='text-center text-violet-400'>
           {alarmActive && formatTime(timeLeft)} {timeToRetry > 0 && timeToRetry}
           {timeMessage}
         </p>
