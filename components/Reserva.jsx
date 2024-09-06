@@ -224,7 +224,7 @@ export default function ReservaButton() {
       <div
         className={`${
           loading && 'pointer-events-none grayscale'
-        } duration-300  h-max flex items-start flex-col gap-10`}
+        } px-3 duration-300  h-max flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
 
