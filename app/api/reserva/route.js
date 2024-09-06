@@ -253,12 +253,9 @@ export async function POST(req) {
 
     return NextResponse.json({ message: 'Done', logs: logs })
   } catch (error) {
-    console.log(error.message)
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    return NextResponse.json({
+      error: 'Error al realizar la reserva',
+      logs: logs,
     })
   } finally {
     if (browser) {
