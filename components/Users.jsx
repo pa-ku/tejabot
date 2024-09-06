@@ -52,7 +52,7 @@ export default function Users({ setPostData, postData }) {
 
   function handleSelectedUser({ email, password, dniInvitado }) {
     setShowUsers(false)
-    setMsj('Usuario Cargado')
+
     setPostData((prev) => ({
       ...prev,
       email: email,
@@ -80,7 +80,7 @@ export default function Users({ setPostData, postData }) {
     <>
       <section className='flex w-full flex-col items-center gap-2 justify-center'>
         <button
-          className='text-lg text-start text-white w-full font-bold'
+          className='text-lg text-start  text-white w-full font-bold'
           onClick={handleLoadUser}
         >
           Usuario
@@ -90,24 +90,27 @@ export default function Users({ setPostData, postData }) {
         </p>
 
         <span className=' relative w-full'>
-          <Button onClick={handleShowUsers}>Usuarios</Button>
+          <Button onClick={handleShowUsers}>Mis Usuarios</Button>
 
           {showUsers && (
             <>
-              <div className='duration-300 p-1 bg-gray-800 absolute z-10 w-full rounded-md gap-10'>
+              <div className='duration-300 px-2 py-3  bg-gray-950 absolute z-10 w-full rounded-md gap-10'>
                 {userAccounts.map(({ email, password, dniInvitado }, index) => (
-                  <div key={index} className='items-center h-full w-full flex'>
+                  <div
+                    key={index}
+                    className='p-1 items-center h-full w-full flex'
+                  >
                     <button
                       onClick={() =>
                         handleSelectedUser({ email, password, dniInvitado })
                       }
-                      className='h-full rounded-l-md bg-gray-700 hover:brightness-110 p-2 pl-3 text-start w-full text-white '
+                      className='h-full rounded-l-md bg-gray-800 hover:text-violet-400 p-2 pl-3 text-start w-full text-white '
                     >
                       {email}
                     </button>
                     <button
                       onClick={() => handleDeleteUser(index)}
-                      className='font-bold m-1 hover:bg-red-300  rounded-r-md p-2 bg-red-400'
+                      className='font-bold m-1 text-white hover:bg-red-400  rounded-r-md p-2 bg-red-500'
                     >
                       ✕
                     </button>

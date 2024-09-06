@@ -33,8 +33,8 @@ export default function ReservaButton() {
   const [isRetry, setIsRetry] = useState(false)
   const fetchCounterRef = useRef(0)
   const [retryConfig, setRetryConfig] = useState({
-    time: 60,
-    nOfRetry: 4,
+    time: 5,
+    nOfRetry: 5,
   })
   const [logs, setLogs] = useState([])
 
@@ -107,7 +107,7 @@ export default function ReservaButton() {
     setLoading(true)
     setTimeMessage('')
     setMessage('')
-
+    setLogs([])
     try {
       const response = await fetch('/api/reserva', {
         method: 'POST',
@@ -249,7 +249,7 @@ export default function ReservaButton() {
       </div>
       <div className='w-full space-y-2'>
         <button
-          className=' text-xl duration-300 hover:brightness-110 w-full slick-button p-3 rounded-xl uppercase text-yellow-50'
+          className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-yellow-50'
           onClick={handleReserva}
           disabled={loading}
         >
@@ -274,7 +274,7 @@ export default function ReservaButton() {
       )}
 
       {logs.length > 0 && (
-        <div className='border-2 space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
+        <div className='border-2 duration-500 animate-opacity space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
           {logs.map((log, index) => (
             <p
               className={`${log.includes('❌') && 'text-red-400'} ${

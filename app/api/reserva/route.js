@@ -50,6 +50,14 @@ export async function POST(req) {
         await page.type('input[id="inputEmail"]', email)
         await page.type('input[id="inputPassword"]', password)
         await page.click('button[class="btn btn-primary block full-width m-b"]')
+
+        const failedLogin = await page.$('div[class="alert alert-danger"]')
+        await new Promise((r) => setTimeout(r, 1000))
+
+        if (failedLogin) {
+          addLog('❌ Usuario no registrado')
+          throw new Error('Usuario no registrado.')
+        }
         addLog('✅ Login')
       } catch (err) {
         addLog('❌ No se pudo iniciar sesión...')
@@ -87,7 +95,7 @@ export async function POST(req) {
     async function checkAvaliableTimes(dia, cancha) {
       let horarioEncontrado = false
       const canchas = cancha === 3 ? [1, 2] : [cancha]
-      addLog('🔍 Buscando si el horario esta disponible...')
+      addLog('🔍 Buscando el horario...')
       for (const cancha of canchas) {
         for (const horario of hora) {
           try {

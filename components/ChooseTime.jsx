@@ -18,13 +18,12 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
     { name: '19 - 20', value: '19:00 - 20:00' },
   ]
 
-
   return (
     <>
       <section>
         <h2>Horario</h2>
         <p className='description'>
-          Elige los horarios en orden que se intentaran sacar, si no se
+          Elige los horarios en el orden que se intentaran sacar, si no se
           encuentra uno disponible se intentara otro
         </p>
         <div className='grid grid-cols-3 gap-2 py-2'>
