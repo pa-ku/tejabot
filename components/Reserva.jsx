@@ -11,7 +11,6 @@ import ChooseDay from './ChooseDay'
 import MsjStatus from './MsjStatus'
 import Retry from './Retry'
 
-
 export default function ReservaButton() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -37,6 +36,7 @@ export default function ReservaButton() {
     time: 60,
     nOfRetry: 4,
   })
+  const [logs, setLogs] = useState([''])
 
   const [timeToRetry, settimeToRetry] = useState(0)
 
@@ -107,6 +107,7 @@ export default function ReservaButton() {
     setLoading(true)
     setTimeMessage('')
     setMessage('')
+
     try {
       const response = await fetch('/api/reserva', {
         method: 'POST',
@@ -124,10 +125,12 @@ export default function ReservaButton() {
       })
 
       const result = await response.json()
+      console.log(result.logs)
+
+      setLogs(result.logs)
 
       if (response.ok) {
         setMessage('Reserva realizada con exito! a padelear 💪')
-        console.log('res ok, response' + result)
         fetchCounterRef.current = 0
       } else {
         setMessage('Error: ' + result.error)
@@ -259,7 +262,6 @@ export default function ReservaButton() {
           <div className='loader'></div>
         </div>
       )}
-      {message && <MsjStatus message={message}>{message}</MsjStatus>}
       {timeMessage && (
         <p className='text-violet-400'>
           {alarmActive && formatTime(timeLeft)} {timeToRetry > 0 && timeToRetry}
@@ -267,6 +269,18 @@ export default function ReservaButton() {
         </p>
       )}
 
+      <div className='border-2 space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
+        {logs.map((log, index) => (
+          <p
+            className={`${log.includes('❌') && 'text-red-400'} ${
+              log.includes('✅') && 'text-green-300'
+            }`}
+            key={log}
+          >
+            <span className='text-gray-600'>{index}:</span> {log}
+          </p>
+        ))}
+      </div>
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )

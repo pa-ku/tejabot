@@ -7,10 +7,15 @@ import { NextResponse } from 'next/server'
 export async function POST(req) {
   let browser
 
+  let logs = []
+
+  function addLog(message) {
+    logs.push(message)
+    console.log(message)
+  }
+
   try {
     const requestBody = await req.json()
-    console.log(requestBody)
-
     const { email, password, dniInvitado, dia, cancha, hora } = requestBody
 
     const isDevelopment = process.env.NODE_ENV === 'development'
@@ -41,35 +46,38 @@ export async function POST(req) {
 
     async function login(email, password) {
       try {
+        addLog('🔒 Logeando...')
         await page.type('input[id="inputEmail"]', email)
         await page.type('input[id="inputPassword"]', password)
         await page.click('button[class="btn btn-primary block full-width m-b"]')
-        console.log('Login 🆗')
+        addLog('✅ Login')
       } catch (err) {
+        addLog('❌ No se pudo iniciar sesión...')
         throw new Error('No se pudo iniciar sesión: ' + err.message)
       }
     }
 
     async function chooseDay(dia) {
       try {
+        addLog('🔍 Buscando el dia...')
         const daySelector = `#li-dia-${dia} a`
         await page.waitForSelector(daySelector)
         await page.click(daySelector)
-        console.log('Choose day 🆗')
+        addLog('✅ Dia elegido')
       } catch (err) {
-        throw new Error('No se pudo seleccionar el día ' + dia)
+        addLog(`❌ No se encontro el dia elegido`)
+        throw new Error('No se pudo seleccionar el día')
       }
     }
 
     async function checkReservation() {
-      console.log('Verificando si ya hay una reserva...')
+      addLog('Verificando si ya hay una reserva...')
       const checkAlreadyReserve = await page
         .waitForSelector('div[class="modal inmodal in"]', {
           timeout: 1500,
         })
         .catch(() => null)
       if (checkAlreadyReserve) {
-        console.log('Reserva encontrada 🆗')
         return true
       } else {
         return false
@@ -79,7 +87,7 @@ export async function POST(req) {
     async function checkAvaliableTimes(dia, cancha) {
       let horarioEncontrado = false
       const canchas = cancha === 3 ? [1, 2] : [cancha]
-      console.log('Buscando si existe el horario 🆗')
+      addLog('🔍 Buscando si el horario esta disponible...')
       for (const cancha of canchas) {
         for (const horario of hora) {
           try {
@@ -94,22 +102,35 @@ export async function POST(req) {
                 const aTag = await hora.$('a.alert-link')
                 if (aTag) {
                   await aTag.click()
+                  addLog('✅ Horario encontrado')
                   horarioEncontrado = true
                   break
                 }
               }
             }
 
-            if (horarioEncontrado) break
+            if (horarioEncontrado) {
+              addLog(`✅ Se encontró un horario disponible: ${horario}`)
+              break
+            } else {
+              addLog(
+                `❌ No se encontró el horario: ${horario}, probando el siguiente...`
+              )
+            }
           } catch (error) {
-            console.log(`Buscando el siguiente horario:  ${horario}`)
+            addLog(
+              `❌ Error al buscar el horario: ${horario}, intentando con el siguiente...`
+            )
           }
         }
-        console.log('Check horarios 🆗')
-        if (horarioEncontrado) break
+
+        if (horarioEncontrado) {
+          break
+        }
       }
 
       if (!horarioEncontrado) {
+        addLog('❌ No se encontro el horario')
         throw new Error(
           'Ninguno de los horarios elegidos se encuentra disponible'
         )
@@ -118,11 +139,69 @@ export async function POST(req) {
 
     async function fillForm(dniInvitado) {
       try {
+        addLog('Llenando el formulario...')
         await page.click('input[id="input-dni"]')
         await page.type('input[id="input-dni"]', dniInvitado)
-        console.log('fill form 🆗')
+
+        const userAlreadyUsed = await page.$('div[id="alert-invitado"]')
+        await new Promise((r) => setTimeout(r, 1000))
+        if (userAlreadyUsed) {
+          const isHidden = await page.evaluate((element) => {
+            return window.getComputedStyle(element).display === 'none'
+          }, userAlreadyUsed)
+
+          if (isHidden) {
+            addLog('✅ Persona invitada')
+            addLog('✅ Confirmando la reserva...')
+          } else {
+            addLog('❌ La persona ya fue invitada esta semana')
+            throw new Error('El usuario ya fue invitado por otra persona')
+          }
+        } else {
+          addLog('✅ Persona invitada')
+        }
       } catch (err) {
+        addLog('❌ No se pudo llenar el formulario')
         throw new Error('Error al llenar el formulario: ' + err.message)
+      }
+    }
+
+    async function readReservation() {
+      const reserva = await page.evaluate(() => {
+        const fecha = document
+          .querySelector('.modal-body b:nth-of-type(1)')
+          .nextSibling.textContent.trim()
+        const horario = document
+          .querySelector('.modal-body b:nth-of-type(2)')
+          .nextSibling.textContent.trim()
+
+        const cancha = document
+          .querySelector('.modal-body b:nth-of-type(4)')
+          .nextSibling.textContent.trim()
+
+        return {
+          fecha,
+          horario,
+          cancha,
+        }
+      })
+      addLog('✅ Ya tenes una reserva')
+      addLog(`Fecha: ${reserva.fecha}`)
+      addLog(`Horario: ${reserva.horario}`)
+      addLog(`Cancha: ${reserva.cancha}`)
+    }
+
+    async function checkResult() {
+      try {
+        addLog('Leyendo el popup...')
+        const paragraphText = await page.$eval(
+          'p[style="display: block;"]',
+          (el) => el.textContent
+        )
+        addLog(`❌ Error: ${paragraphText}`)
+        throw new Error(paragraphText)
+      } catch (error) {
+        throw new Error(`Error al comprobar el resultado: ${error}`)
       }
     }
 
@@ -133,22 +212,20 @@ export async function POST(req) {
         await page.click('button[id="btn-id-persona"]')
         await page.click('button[id="btn-id-reserva"]')
         await new Promise((r) => setTimeout(r, 1000))
-
-        console.log('Make reservation 🆗')
+        addLog('✅ Formulario Llenado')
       } catch (err) {
+        addLog('❌ Error al rellenar el formolario')
         throw new Error('Error al realizar la reserva: ' + err.message)
       }
     }
-
-    // Ejecución del flujo de reserva
     await login(email, password)
-
     const hasReservation = await checkReservation()
+
     if (hasReservation) {
+      await readReservation()
       throw new Error('Ya tenes una reserva realizada')
     }
-
-    console.log('No tiene reserva, se continúa 🆗')
+    addLog('✅ No tiene una reserva realizada...')
     await page.waitForSelector('a[href="#"]')
     await page.click('a[href="#"]')
     await page.waitForSelector(
@@ -160,29 +237,21 @@ export async function POST(req) {
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
+
+    await new Promise((r) => setTimeout(r, 1000))
+
     const checkPopUp = await page.$(
       'div[class="sweet-alert showSweetAlert visible"]'
     )
-    if (checkPopUp) {
-      console.log('Leyendo el popup🆗')
-      const paragraphText = await page.$eval(
-        'p[style="display: block;"]',
-        (el) => el.textContent
-      )
-      throw new Error(paragraphText)
-    } else {
-      return new Response(
-        JSON.stringify({
-          message: 'Reserva realizada con exito! a padelear 💪',
-        }),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
+    await new Promise((r) => setTimeout(r, 1000))
+
+    if (checkPopUp) await checkResult()
+    else {
+      await readReservation()
+      addLog(`'Reserva realizada con exito! a padelear 💪',`)
     }
+
+    return NextResponse.json({ message: 'Done', logs: logs })
   } catch (error) {
     console.log(error.message)
     return new Response(JSON.stringify({ error: error.message }), {
