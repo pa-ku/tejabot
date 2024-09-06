@@ -205,12 +205,12 @@ export default function ReservaButton() {
         TejaB
         <svg
           className='inline animate-rotate'
-          width='50'
-          height='50'
+          width='58'
+          height='58'
           viewBox='0 0 24 24'
           strokeWidth='1.5'
-          stroke='#f83596'
-          fill='none'
+          stroke='#161128'
+          fill='#f83596'
           strokeLinecap='round'
           strokeLinejoin='round'
         >
