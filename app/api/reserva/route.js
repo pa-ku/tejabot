@@ -16,7 +16,8 @@ export async function POST(req) {
 
   try {
     const requestBody = await req.json()
-    const { email, password, dniInvitado, dia, cancha, hora,code } = requestBody
+    const { email, password, dniInvitado, dia, cancha, hora, smsCode } =
+      requestBody
 
     const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -118,12 +119,10 @@ export async function POST(req) {
             }
 
             if (horarioEncontrado) {
-              addLog(`✅ Se encontró un horario disponible: ${horario}`)
+              addLog(`✅ ${horario}`)
               break
             } else {
-              addLog(
-                `❌ No se encontró el horario: ${horario}, probando el siguiente...`
-              )
+              addLog(`❌ ${horario}`)
             }
           } catch (error) {
             addLog(
@@ -213,6 +212,12 @@ export async function POST(req) {
       }
     }
 
+    async function validateSms() {
+      await page.click('input[id="validate_sms_validation_code"]')
+      await page.type('input[id="validate_sms_validation_code"]', smsCode)
+      await page.click('button[id="validate_sms_guardar"]')
+    }
+
     async function makeReservation() {
       try {
         await confirmAlert(page)
@@ -245,6 +250,7 @@ export async function POST(req) {
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
+    await validateSms()
 
     await new Promise((r) => setTimeout(r, 1000))
 

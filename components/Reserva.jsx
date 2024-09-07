@@ -72,7 +72,7 @@ export default function ReservaButton() {
           dniInvitado: postData.dniInvitado,
           dia: postData.dia,
           cancha: postData.cancha,
-          code: postData.codeVerification,
+          smsCode: postData.codeVerification,
           hora: horarios,
         }),
       })
