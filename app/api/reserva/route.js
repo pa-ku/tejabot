@@ -16,7 +16,7 @@ export async function POST(req) {
 
   try {
     const requestBody = await req.json()
-    const { email, password, dniInvitado, dia, cancha, hora } = requestBody
+    const { email, password, dniInvitado, dia, cancha, hora,code } = requestBody
 
     const isDevelopment = process.env.NODE_ENV === 'development'
 

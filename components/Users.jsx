@@ -152,6 +152,16 @@ export default function Users({ setPostData, postData }) {
             }
             placeholder='Dni Del Invitado'
           />
+          <Input
+            value={postData.codeVerification}
+            onChange={(e) =>
+              setPostData((prev) => ({
+                ...prev,
+                codeVerification: e.target.value,
+              }))
+            }
+            placeholder='Codigo de verificación'
+          />
         </div>
 
         <Button color={'bg-[var(--primary-300)]'} onClick={handleSaveUser}>

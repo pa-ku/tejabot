@@ -10,6 +10,7 @@ import ChooseDay from './ChooseDay'
 import { TimeContext } from '@/context/TimeContext'
 import LoadingCircle from './ui/LoadingCircle'
 import LogsLayout from '@/components/LogsLayout'
+import ReservarBtn from './ReservarBtn'
 
 export default function ReservaButton() {
   const { hasAlarm, timerValue, setAlarmActive, alarmActive } =
@@ -20,12 +21,14 @@ export default function ReservaButton() {
     email: '',
     password: '',
     dniInvitado: '',
+    codeVerification: '',
     cancha: 3,
-    dia: undefined,
+    dia: 7,
   })
-  const [horarios, setHorarios] = useState([])
+  const [horarios, setHorarios] = useState(['19:00 - 20:00'])
   const fetchCounterRef = useRef(0)
   const [logs, setLogs] = useState([])
+  console.log(horarios)
 
   function handleHorario(e) {
     const value = e.target.value
@@ -69,6 +72,7 @@ export default function ReservaButton() {
           dniInvitado: postData.dniInvitado,
           dia: postData.dia,
           cancha: postData.cancha,
+          code: postData.codeVerification,
           hora: horarios,
         }),
       })
@@ -148,19 +152,27 @@ export default function ReservaButton() {
         <Timer></Timer>
       </div>
       <div className='w-full px-4 space-y-2'>
-        <button
-          className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-slate-800 font-bold'
+        <ReservarBtn
           onClick={handleReserva}
           disabled={loading}
-        >
-          {!loading && !alarmActive && 'Reservar'}
-          {(loading && 'Reservando') ||
-            (alarmActive && `Esperando hasta ${timerValue}`)}
-        </button>
+          alarmActive={alarmActive}
+          timerValue={timerValue}
+          loading={loading}
+        ></ReservarBtn>
+        {alarmActive && (
+          <button
+            type='button'
+            className=' bg-red-950 rounded-lg text-red-400 border-2 border-red-900 w-full py-3 hover:brightness-110'
+            onClick={() => setAlarmActive(false)}
+          >
+            Desactivar alarma
+          </button>
+        )}
         {message && (
           <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
         )}
       </div>
+
       {loading && <LoadingCircle></LoadingCircle>}
 
       {logs.length > 0 && <LogsLayout logs={logs}></LogsLayout>}
