@@ -21,7 +21,7 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
   return (
     <>
       <section>
-        <h2>Horario</h2>
+        <h2>Horarios</h2>
         <p className='description'>
           Elige los horarios en el orden que se intentaran sacar, si no se
           encuentra uno disponible se intentara otro

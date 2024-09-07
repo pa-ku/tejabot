@@ -1,19 +1,20 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Title from './Title'
-import { getMillisecondsUntil } from '@/utils/getMiliSeconds'
 import Court from './Court'
 import Timer from './Timer'
 import ChooseTime from './ChooseTime'
 import Users from './Users'
 import ChooseDay from './ChooseDay'
-import Retry from './Retry'
+import { TimeContext } from '@/context/TimeContext'
+import LoadingCircle from './ui/LoadingCircle'
+import LogsLayout from '@/components/LogsLayout'
 
 export default function ReservaButton() {
+  const { hasAlarm, timerValue, setAlarmActive, alarmActive } =
+    useContext(TimeContext)
   const [loading, setLoading] = useState(false)
-
-  const [timeMessage, setTimeMessage] = useState('')
   const [message, setMessage] = useState('')
   const [postData, setPostData] = useState({
     email: '',
@@ -23,57 +24,9 @@ export default function ReservaButton() {
     dia: undefined,
   })
   const [horarios, setHorarios] = useState([])
-  const [timer, setTimer] = useState({
-    hasAlarm: false,
-    hr: 6,
-    min: 0,
-  })
-  const [alarmActive, setAlarmActive] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(0)
-  const [isRetry, setIsRetry] = useState(false)
   const fetchCounterRef = useRef(0)
-  const [retryConfig, setRetryConfig] = useState({
-    time: 5,
-    nOfRetry: 5,
-  })
   const [logs, setLogs] = useState([])
 
-  const [timeToRetry, settimeToRetry] = useState(0)
-
-  useEffect(() => {
-    let timerRetry
-    if (timeToRetry > 0) {
-      timerRetry = setInterval(() => {
-        settimeToRetry((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRetry)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-
-    return () => clearInterval(timerRetry)
-  }, [timeToRetry])
-
-  useEffect(() => {
-    let timer
-    if (alarmActive && timeLeft > 0) {
-      timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-
-    return () => clearInterval(timer)
-  }, [alarmActive, timeLeft])
-
   function handleHorario(e) {
     const value = e.target.value
     setHorarios((prev) => {
@@ -85,27 +38,23 @@ export default function ReservaButton() {
     })
   }
 
-  function handleHorario(e) {
-    const value = e.target.value
-    setHorarios((prev) => {
-      if (prev.includes(value)) {
-        return prev.filter((hora) => hora !== value)
-      } else {
-        return [...prev, value]
-      }
-    })
-  }
+  useEffect(() => {
+    if (alarmActive) {
+      const interval = setInterval(() => {
+        const currentTime = new Date().toTimeString().slice(0, 5) // Formato 'HH:MM'
+        if (timerValue === currentTime) {
+          performReserva()
+          clearInterval(interval)
+        }
+      }, 1000)
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
-  }
+      return () => clearInterval(interval)
+    }
+  }, [alarmActive, timerValue])
 
-  const performReserva = async () => {
+  async function performReserva() {
     setAlarmActive(false)
     setLoading(true)
-    setTimeMessage('')
     setMessage('')
     setLogs([])
     try {
@@ -129,21 +78,16 @@ export default function ReservaButton() {
 
       if (response.ok) {
         console.log(result)
-
         fetchCounterRef.current = 0
-      } else {
-        console.log(result)
-        if (isRetry) retryFetch()
       }
     } catch (error) {
       console.log(error)
-      if (isRetry) retryFetch()
     } finally {
       setLoading(false)
     }
   }
 
-  const handleReserva = async () => {
+  async function handleReserva() {
     if (
       postData.email === '' ||
       postData.password === '' ||
@@ -157,50 +101,15 @@ export default function ReservaButton() {
     if (horarios.length < 1) {
       return setMessage(' Selecciona al menos un horario')
     }
-
-    if (timer.hasAlarm) {
-      const millisecondsUntilTarget = getMillisecondsUntil(timer.hr, timer.min)
-      const secondsUntilTarget = millisecondsUntilTarget / 1000
-      setTimeLeft(secondsUntilTarget)
-
-      setTimeMessage(
-        `De ${Math.floor(secondsUntilTarget)} Para ejecutar a las ${timer.hr}:${
-          timer.min
-        } PM...`
-      )
+    if (hasAlarm) {
       setAlarmActive(true)
-      setTimeout(() => {
-        performReserva()
-      }, millisecondsUntilTarget)
     } else {
       performReserva()
     }
   }
 
-  function retryFetch() {
-    fetchCounterRef.current += 1
-    if (fetchCounterRef.current >= retryConfig.nOfRetry) {
-      setTimeMessage(
-        `Error: No se pudo reservar luego de ${retryConfig.nOfRetry} intentos`
-      )
-      return
-    } else {
-      settimeToRetry(retryConfig.time)
-      setTimeMessage(
-        ` Reintentando en ${retryConfig.time} segundos. Intentos restantes ${retryConfig.nOfRetry}`
-      )
-      setTimeout(() => {
-        performReserva()
-      }, retryConfig.time * 1000)
-    }
-  }
-
   return (
-    <div
-      className={`${
-        alarmActive && 'pointer-events-none  '
-      }  h-max w-full md:w-80 flex items-start flex-col gap-10`}
-    >
+    <div className={` h-max w-full md:w-80 flex items-start flex-col gap-10`}>
       <Title>
         TejaB
         <svg
@@ -223,70 +132,38 @@ export default function ReservaButton() {
       </Title>
       <div
         className={`${
-          loading && 'pointer-events-none grayscale'
-        } px-4 lg:px-0 duration-300  h-max flex items-start flex-col gap-10`}
+          (loading && 'pointer-events-none sepia') ||
+          (alarmActive && 'pointer-events-none grayscale')
+        } px-4 lg:px-0 duration-300   h-max flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
-
+        <Court setPostData={setPostData}></Court>
         <ChooseDay postData={postData} setPostData={setPostData} />
-
         <ChooseTime
           setHorarios={setHorarios}
           handleHorario={handleHorario}
           horarios={horarios}
         />
 
-        <Court setPostData={setPostData}></Court>
-
-        <Timer setTimer={setTimer} timer={timer}></Timer>
-
-        {/* <Retry
-          setRetryConfig={setRetryConfig}
-          retryConfig={retryConfig}
-          isRetry={isRetry}
-          setIsRetry={setIsRetry}
-        /> */}
-        <div className='w-full space-y-2'>
-          <button
-            className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-yellow-50'
-            onClick={handleReserva}
-            disabled={loading}
-          >
-            {!loading && !alarmActive && 'Reservar'}
-            {loading && 'Reservando'}
-            {alarmActive && 'Esperando Timer'}
-          </button>
-          {message && (
-            <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
-          )}
-        </div>
+        <Timer></Timer>
       </div>
-      {loading && (
-        <div className='w-full flex items-center justify-center'>
-          <div className='loader'></div>
-        </div>
-      )}
-      {timeMessage && (
-        <p className='text-center text-violet-400'>
-          {alarmActive && formatTime(timeLeft)} {timeToRetry > 0 && timeToRetry}
-          {timeMessage}
-        </p>
-      )}
+      <div className='w-full px-4 space-y-2'>
+        <button
+          className=' text-xl duration-300 hover:brightness-110  w-full slick-button p-3 py-4 rounded-lg uppercase text-slate-800 font-bold'
+          onClick={handleReserva}
+          disabled={loading}
+        >
+          {!loading && !alarmActive && 'Reservar'}
+          {(loading && 'Reservando') ||
+            (alarmActive && `Esperando hasta ${timerValue}`)}
+        </button>
+        {message && (
+          <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
+        )}
+      </div>
+      {loading && <LoadingCircle></LoadingCircle>}
 
-      {logs.length > 0 && (
-        <div className='border-2 duration-500 animate-opacity space-y-1 border-gray-600 text-white bg-gray-900 p-3 w-full rounded-lg'>
-          {logs.map((log, index) => (
-            <p
-              className={`${log.includes('❌') && 'text-red-400'} ${
-                log.includes('✅') && 'text-green-300'
-              }`}
-              key={log}
-            >
-              <span className='text-gray-600'>{index}:</span> {log}
-            </p>
-          ))}
-        </div>
-      )}
+      {logs.length > 0 && <LogsLayout logs={logs}></LogsLayout>}
       <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )

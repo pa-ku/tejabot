@@ -1,7 +1,10 @@
-import TimeInput from './ui/TimeInput'
+'use client'
 
-export default function Timer({ timer, setTimer }) {
-  const { hr, min, hasAlarm } = timer
+import { TimeContext } from '@/context/TimeContext'
+import { useContext } from 'react'
+
+export default function Timer() {
+  const { setHasAlarm, setTimerValue, hasAlarm } = useContext(TimeContext)
 
   const clockSvg = (
     <svg
@@ -21,6 +24,7 @@ export default function Timer({ timer, setTimer }) {
       <path d='M17 4l2.75 2' />
     </svg>
   )
+
   return (
     <>
       <section className='flex flex-col '>
@@ -33,14 +37,8 @@ export default function Timer({ timer, setTimer }) {
         <div className='h-16 flex items-center gap-3'>
           <span className='relative'>
             {clockSvg}
-
             <input
-              onChange={() =>
-                setTimer((prevTime) => ({
-                  ...prevTime,
-                  hasAlarm: !prevTime.hasAlarm,
-                }))
-              }
+              onChange={() => setHasAlarm((prev) => !prev)}
               type='checkbox'
               className='hover:brightness-110 left-0 top-0 appearance-none cursor-pointer absolute w-full h-full'
             />
@@ -48,19 +46,10 @@ export default function Timer({ timer, setTimer }) {
           {hasAlarm && (
             <>
               <input
-                className='bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
+                className=' bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
                 type='time'
-                value={`${hr.toString().padStart(2, '0')}:${min
-                  .toString()
-                  .padStart(2, '0')}`}
-                onChange={(e) => {
-                  const [newHr, newMin] = e.target.value.split(':')
-                  setTimer((prevTime) => ({
-                    ...prevTime,
-                    hr: newHr,
-                    min: newMin,
-                  }))
-                }}
+                defaultValue={'06:00'}
+                onChange={(e) => setTimerValue(e.target.value)}
               />
             </>
           )}
