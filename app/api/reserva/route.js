@@ -3,24 +3,25 @@ import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 import chromium from '@sparticuz/chromium'
 import { NextResponse } from 'next/server'
+import { login } from '@/pupsteps/login'
+import { fillForm } from '@/pupsteps/fillForm'
+import { checkReservation } from '@/pupsteps/checkReservation'
+import { readReservation } from '@/pupsteps/readReservation'
+import { chooseDay } from '@/pupsteps/chooseDay'
+import { checkResult } from '@/pupsteps/checkResult'
+import { checkPopUp } from '@/pupsteps/checkPopUp'
+import { makeReservation } from '@/pupsteps/makeReservation'
 
 export async function POST(req) {
   let browser
-
   let logs = []
-
   function addLog(message) {
     logs.push(message)
-    console.log(message)
   }
-
   try {
     const requestBody = await req.json()
-    const { email, password, dniInvitado, dia, cancha, hora, smsCode } =
-      requestBody
-
+    const { email, password, dniInvitado, dia, cancha, hora } = requestBody
     const isDevelopment = process.env.NODE_ENV === 'development'
-
     if (isDevelopment) {
       browser = await puppeteer.launch({
         headless: false,
@@ -34,9 +35,7 @@ export async function POST(req) {
         headless: chromium.headless,
       })
     }
-
     const page = await browser.newPage()
-
     try {
       await page.goto('https://reservar.serviciosmerlo.online/login')
     } catch (err) {
@@ -45,225 +44,84 @@ export async function POST(req) {
       )
     }
 
-    async function login(email, password) {
+    async function checkAvaliableTimes() {
       try {
-        addLog('🔒 Logeando...')
-        await page.type('input[id="inputEmail"]', email)
-        await page.type('input[id="inputPassword"]', password)
-        await page.click('button[class="btn btn-primary block full-width m-b"]')
+        let horarioEncontrado = false
+        const canchas = cancha === 3 ? [1, 2] : [cancha]
+        addLog('🔍 Buscando el horario...')
+        for (const cancha of canchas) {
+          for (const horario of hora) {
+            try {
+              const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
+              await page.waitForSelector(horarioSelector, { timeout: 1000 })
 
-        const failedLogin = await page.$('div[class="alert alert-danger"]')
-        await new Promise((r) => setTimeout(r, 1000))
+              const listaHorarios = await page.$$(horarioSelector + ' > li')
 
-        if (failedLogin) {
-          addLog('❌ Usuario no registrado')
-          throw new Error('Usuario no registrado.')
-        }
-        addLog('✅ Login')
-      } catch (err) {
-        addLog('❌ No se pudo iniciar sesión...')
-        throw new Error('No se pudo iniciar sesión: ' + err.message)
-      }
-    }
-
-    async function chooseDay(dia) {
-      try {
-        addLog('🔍 Buscando el dia...')
-        const daySelector = `#li-dia-${dia} a`
-        await page.waitForSelector(daySelector)
-        await page.click(daySelector)
-        addLog('✅ Dia elegido')
-      } catch (err) {
-        addLog(`❌ No se encontro el dia elegido`)
-        throw new Error('No se pudo seleccionar el día')
-      }
-    }
-
-    async function checkReservation() {
-      addLog('Verificando si ya hay una reserva...')
-      const checkAlreadyReserve = await page
-        .waitForSelector('div[class="modal inmodal in"]', {
-          timeout: 1500,
-        })
-        .catch(() => null)
-      if (checkAlreadyReserve) {
-        return true
-      } else {
-        return false
-      }
-    }
-
-    async function checkAvaliableTimes(dia, cancha) {
-      let horarioEncontrado = false
-      const canchas = cancha === 3 ? [1, 2] : [cancha]
-      addLog('🔍 Buscando el horario...')
-      for (const cancha of canchas) {
-        for (const horario of hora) {
-          try {
-            const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
-            await page.waitForSelector(horarioSelector, { timeout: 1000 })
-
-            const listaHorarios = await page.$$(horarioSelector + ' > li')
-
-            for (let hora of listaHorarios) {
-              const text = await page.evaluate((el) => el.textContent, hora)
-              if (text.includes(horario)) {
-                const aTag = await hora.$('a.alert-link')
-                if (aTag) {
-                  await aTag.click()
-                  addLog('✅ Horario encontrado')
-                  horarioEncontrado = true
-                  break
+              for (let hora of listaHorarios) {
+                const text = await page.evaluate((el) => el.textContent, hora)
+                if (text.includes(horario)) {
+                  const aTag = await hora.$('a.alert-link')
+                  if (aTag) {
+                    await aTag.click()
+                    addLog('✅ Horario encontrado')
+                    horarioEncontrado = true
+                    break
+                  }
                 }
               }
-            }
 
-            if (horarioEncontrado) {
-              addLog(`✅ ${horario}`)
-              break
-            } else {
-              addLog(`❌ ${horario}`)
+              if (horarioEncontrado) {
+                addLog(`✅ ${horario}`)
+                break
+              } else {
+                addLog(`❌ ${horario}`)
+              }
+            } catch (error) {
+              addLog(
+                `❌ Error al buscar el horario: ${horario}, intentando con el siguiente...`
+              )
             }
-          } catch (error) {
-            addLog(
-              `❌ Error al buscar el horario: ${horario}, intentando con el siguiente...`
-            )
+          }
+
+          if (horarioEncontrado) {
+            break
           }
         }
 
-        if (horarioEncontrado) {
-          break
+        if (!horarioEncontrado) {
+          addLog('❌ No se encontro el horario')
+          throw new Error(
+            'Ninguno de los horarios elegidos se encuentra disponible'
+          )
         }
-      }
-
-      if (!horarioEncontrado) {
-        addLog('❌ No se encontro el horario')
-        throw new Error(
-          'Ninguno de los horarios elegidos se encuentra disponible'
-        )
-      }
+      } catch (error) {}
+      console.log(error)
+      throw new Error(error)
     }
 
-    async function fillForm(dniInvitado) {
-      try {
-        addLog('Llenando el formulario...')
-        await page.click('input[id="input-dni"]')
-        await page.type('input[id="input-dni"]', dniInvitado)
-
-        const userAlreadyUsed = await page.$('div[id="alert-invitado"]')
-        await new Promise((r) => setTimeout(r, 1000))
-        if (userAlreadyUsed) {
-          const isHidden = await page.evaluate((element) => {
-            return window.getComputedStyle(element).display === 'none'
-          }, userAlreadyUsed)
-
-          if (isHidden) {
-            addLog('✅ Persona invitada')
-            addLog('✅ Confirmando la reserva...')
-          } else {
-            addLog('❌ La persona ya fue invitada esta semana')
-            throw new Error('El usuario ya fue invitado por otra persona')
-          }
-        } else {
-          addLog('✅ Persona invitada')
-        }
-      } catch (err) {
-        addLog('❌ No se pudo llenar el formulario')
-        throw new Error('Error al llenar el formulario: ' + err.message)
-      }
-    }
-
-    async function readReservation() {
-      const reserva = await page.evaluate(() => {
-        const fecha = document
-          .querySelector('.modal-body b:nth-of-type(1)')
-          .nextSibling.textContent.trim()
-        const horario = document
-          .querySelector('.modal-body b:nth-of-type(2)')
-          .nextSibling.textContent.trim()
-
-        const cancha = document
-          .querySelector('.modal-body b:nth-of-type(4)')
-          .nextSibling.textContent.trim()
-
-        return {
-          fecha,
-          horario,
-          cancha,
-        }
-      })
-      addLog('✅ Ya tenes una reserva')
-      addLog(`Fecha: ${reserva.fecha}`)
-      addLog(`Horario: ${reserva.horario}`)
-      addLog(`Cancha: ${reserva.cancha}`)
-    }
-
-    async function checkResult() {
-      try {
-        addLog('Leyendo el popup...')
-        const paragraphText = await page.$eval(
-          'p[style="display: block;"]',
-          (el) => el.textContent
-        )
-        addLog(`❌ Error: ${paragraphText}`)
-        throw new Error(paragraphText)
-      } catch (error) {
-        throw new Error(`Error al comprobar el resultado: ${error}`)
-      }
-    }
-
-    async function validateSms() {
-      addLog('📱 Validando sms...')
-      await page.click('input[id="validate_sms_validation_code"]')
-      await page.type('input[id="validate_sms_validation_code"]', smsCode)
-      await page.click('button[id="validate_sms_guardar"]')
-    }
-
-    async function makeReservation() {
-      try {
-        await confirmAlert(page)
-        await new Promise((r) => setTimeout(r, 1000))
-        await page.click('button[id="btn-id-persona"]')
-        await page.click('button[id="btn-id-reserva"]')
-        await new Promise((r) => setTimeout(r, 1000))
-        addLog('✅ Formulario Llenado')
-      } catch (err) {
-        addLog('❌ Error al rellenar el formolario')
-        throw new Error('Error al realizar la reserva: ' + err.message)
-      }
-    }
-    await login(email, password)
-    const hasReservation = await checkReservation()
-
+    await login(page, addLog, email, password)
+    const hasReservation = await checkReservation(page, addLog)
     if (hasReservation) {
-      await readReservation()
+      await readReservation(page, addLog)
       throw new Error('Ya tenes una reserva realizada')
+    } else {
+      addLog('✅ No tiene una reserva realizada...')
+      await page.waitForSelector('a[href="#"]')
+      await page.click('a[href="#"]')
+      await page.waitForSelector(
+        '#side-menu > li:nth-child(4) > ul > li:first-child > a'
+      )
+      await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
     }
-    addLog('✅ No tiene una reserva realizada...')
-    await page.waitForSelector('a[href="#"]')
-    await page.click('a[href="#"]')
-    await page.waitForSelector(
-      '#side-menu > li:nth-child(4) > ul > li:first-child > a'
-    )
-    await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
-
-    await chooseDay(dia)
-    await checkAvaliableTimes(dia, cancha)
-    await fillForm(dniInvitado)
-    await makeReservation()
-    await validateSms()
-
-    await new Promise((r) => setTimeout(r, 1000))
-
-    const checkPopUp = await page.$(
-      'div[class="sweet-alert showSweetAlert visible"]'
-    )
-    await new Promise((r) => setTimeout(r, 1000))
-
-    if (checkPopUp) await checkResult()
+    await chooseDay(page, addLog, dia)
+    await checkAvaliableTimes()
+    await fillForm(page, addLog, dniInvitado)
+    await makeReservation(page, addLog)
+    const checkIfHasPopUp = await checkPopUp(page, addLog)
+    if (checkIfHasPopUp) await checkResult(page, addLog)
     else {
-      await readReservation()
-      addLog(`'Reserva realizada con exito! a padelear 💪',`)
+      await readReservation(page, addLog)
+      addLog('Reserva realizada con exito! a padelear 💪')
     }
 
     return NextResponse.json({ message: 'Done', logs: logs })

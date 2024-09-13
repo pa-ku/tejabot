@@ -1,13 +1,13 @@
 export const dataUsers = [
   {
-    email: 'agussisa@outlook.es',
-    password: 'tejadito123',
-    dniInvitado: '36578219',
-  },
-  {
     email: 'natuvenitez@hotmail.com',
     password: 'tejadito12345',
     dniInvitado: '14505937',
+  },
+  {
+    email: 'agussisa@outlook.es',
+    password: 'tejadito123',
+    dniInvitado: '36578219',
   },
   {
     email: 'gonzamafe@outlook.com',
