@@ -246,12 +246,10 @@ export async function POST(req) {
     await makeReservation()
   /*   await validateSms() */
 
-    await new Promise((r) => setTimeout(r, 1000))
-
     const checkPopUp = await page.$(
       'div[class="sweet-alert showSweetAlert visible"]'
     )
-    await new Promise((r) => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 2000))
 
     if (checkPopUp) await checkResult()
     else {
