@@ -52,13 +52,6 @@ export async function POST(req) {
         await page.type('input[id="inputPassword"]', password)
         await page.click('button[class="btn btn-primary block full-width m-b"]')
 
-        const failedLogin = await page.$('div[class="alert alert-danger"]')
-        await new Promise((r) => setTimeout(r, 1000))
-
-        if (failedLogin) {
-          addLog('❌ Usuario no registrado')
-          throw new Error('Usuario no registrado.')
-        }
         addLog('✅ Login')
       } catch (err) {
         addLog('❌ No se pudo iniciar sesión...')
