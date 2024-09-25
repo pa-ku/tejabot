@@ -251,7 +251,7 @@ export async function POST(req) {
     await checkAvaliableTimes(dia, cancha)
     await fillForm(dniInvitado)
     await makeReservation()
-    await validateSms()
+  /*   await validateSms() */
 
     await new Promise((r) => setTimeout(r, 1000))
 
