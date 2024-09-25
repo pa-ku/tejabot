@@ -24,7 +24,7 @@ export async function POST(req) {
     if (isDevelopment) {
       browser = await puppeteer.launch({
         headless: false,
-        slowMo: 5,
+        slowMo: 3,
       })
     } else {
       browser = await puppeteerCore.launch({
@@ -246,10 +246,12 @@ export async function POST(req) {
     await makeReservation()
   /*   await validateSms() */
 
+  await new Promise((r) => setTimeout(r, 2500))
     const checkPopUp = await page.$(
       'div[class="sweet-alert showSweetAlert visible"]'
     )
-    await new Promise((r) => setTimeout(r, 2000))
+    console.log(checkPopUp);
+    
 
     if (checkPopUp) await checkResult()
     else {
