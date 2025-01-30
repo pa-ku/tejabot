@@ -26,6 +26,9 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
           Elige los horarios en el orden que se intentaran sacar, si no se
           encuentra uno disponible se intentara otro
         </p>
+        <Button color={'mt-1 bg-gray-800  text-xs px-10 py-2'} onClick={() => setHorarios([])}>
+          Limpiar
+        </Button>
         <div className='grid grid-cols-3 gap-2 py-2'>
           {arrTime.map(({ name, value }) => (
             <Checkbox
@@ -39,9 +42,7 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
           ))}
         </div>
 
-        <Button color={'bg-gray-800'} onClick={() => setHorarios([])}>
-          Limpiar
-        </Button>
+
         <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
           {horarios.map((time) => (
             <p
