@@ -1,6 +1,7 @@
+import { useReserveContext } from '@/context/ReserveContext'
 import Radio from './ui/Radio'
 
-export default function ChooseDay({ setPostData, postData }) {
+export default function ChooseDay() {
   const daysOfWeek = [
     { day: 'lunes', value: 1 },
     { day: 'martes', value: 2 },
@@ -11,19 +12,20 @@ export default function ChooseDay({ setPostData, postData }) {
     { day: 'domingo', value: 7 },
   ]
 
+  const { dia, setDia } = useReserveContext()
   return (
     <>
-      <section className='flex w-full flex-col items-center justify-center'>
+      <section className='flex w-full flex-col  items-center justify-center'>
         <h2>Día</h2>
 
-        <div className=' columns-2 space-y-2 column-gap  w-full uppercase'>
+        <div className='grid grid-cols-3 gap-2 w-full uppercase'>
           {daysOfWeek.map(({ day, value }) => (
             <Radio
               key={day}
-              onChange={() => setPostData((prev) => ({ ...prev, dia: value }))}
+              onChange={() => setDia(value)}
               name={'date'}
               value={value}
-              defaultChecked={value === postData.dia}
+              defaultChecked={value === dia}
             >
               {day}
             </Radio>

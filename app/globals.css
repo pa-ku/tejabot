@@ -152,8 +152,7 @@ h2 {
 }
 
 .description {
-  color: #929292;
-  font-size: 14px;
+  @apply text-xs text-gray-400 text-start w-full;
 }
 
 /* SELECTION */

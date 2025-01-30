@@ -8,9 +8,8 @@ export default function Timer() {
 
   const clockSvg = (
     <svg
-      className={`duration-200 ${
-        hasAlarm ? 'stroke-[var(--primary-100)] ' : ' stroke-white'
-      }  `}
+      className={`duration-200 ${hasAlarm ? 'stroke-[var(--primary-100)] ' : ' stroke-white'
+        }  `}
       width='44'
       height='44'
       viewBox='0 0 24 24'
@@ -48,7 +47,8 @@ export default function Timer() {
               <input
                 className=' bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
                 type='time'
-                defaultValue={'06:00'}
+                defaultValue={'05:59:54'} // tiene 3 segundos de desfaz
+                step="2"
                 onChange={(e) => setTimerValue(e.target.value)}
               />
             </>

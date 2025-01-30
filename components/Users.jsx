@@ -88,9 +88,27 @@ export default function Users({ setPostData, postData }) {
         <p className='description'>
           Los datos guardados se almacenan localmente
         </p>
-
         <span className=' relative w-full'>
-          <Button onClick={handleShowUsers}>Mis Usuarios</Button>
+          <div className='flex gap-2 w-full justify-center'>
+
+            <Button onClick={handleShowUsers}>Usuarios</Button>
+            <Button color={'bg-[var(--primary-300)]'} onClick={handleSaveUser}>
+              Guardar
+            </Button>
+            <Button
+              color={'bg-gray-800'}
+              onClick={() =>
+                setPostData((prev) => ({
+                  ...prev,
+                  email: '',
+                  password: '',
+                  dniInvitado: '',
+                }))
+              }
+            >
+              Limpiar
+            </Button>
+          </div>
 
           {showUsers && (
             <>
@@ -152,7 +170,7 @@ export default function Users({ setPostData, postData }) {
             }
             placeholder='Dni Del Invitado'
           />
-      {/*     <Input
+          {/*     <Input
             value={postData.codeVerification}
             onChange={(e) =>
               setPostData((prev) => ({
@@ -164,22 +182,7 @@ export default function Users({ setPostData, postData }) {
           /> */}
         </div>
 
-        <Button color={'bg-[var(--primary-300)]'} onClick={handleSaveUser}>
-          Guardar Usuario
-        </Button>
-        <Button
-          color={'bg-gray-800'}
-          onClick={() =>
-            setPostData((prev) => ({
-              ...prev,
-              email: '',
-              password: '',
-              dniInvitado: '',
-            }))
-          }
-        >
-          Limpiar
-        </Button>
+
 
         {msj && <MsjStatus message={msj}>{msj}</MsjStatus>}
       </section>

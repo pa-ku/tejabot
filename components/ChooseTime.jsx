@@ -46,7 +46,7 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
           {horarios.map((time) => (
             <p
               key={time}
-              className='bg-violet-950 text-white px-4 py-1 rounded-md'
+              className='bg-violet-950 border-violet-800 border-2 text-violet-400  p-1 rounded-md text-sm '
             >
               {time}
             </p>

@@ -11,6 +11,8 @@ import { TimeContext } from '@/context/TimeContext'
 import LoadingCircle from './ui/LoadingCircle'
 import LogsLayout from '@/components/LogsLayout'
 import ReservarBtn from './ReservarBtn'
+import moment from 'moment-timezone'
+import { useReserveContext } from '@/context/ReserveContext'
 
 export default function ReservaButton() {
   const { hasAlarm, timerValue, setAlarmActive, alarmActive } =
@@ -22,13 +24,12 @@ export default function ReservaButton() {
     password: '',
     dniInvitado: '',
     codeVerification: '',
-    cancha: 3,
-    dia: 7,
   })
+  const { dia, cancha } = useReserveContext()
   const [horarios, setHorarios] = useState(['19:00 - 20:00'])
   const fetchCounterRef = useRef(0)
   const [logs, setLogs] = useState([])
-  console.log(horarios)
+  const [currentTime, setCurrentTime] = useState()
 
   function handleHorario(e) {
     const value = e.target.value
@@ -42,18 +43,21 @@ export default function ReservaButton() {
   }
 
   useEffect(() => {
-    if (alarmActive) {
-      const interval = setInterval(() => {
-        const currentTime = new Date().toTimeString().slice(0, 5) // Formato 'HH:MM'
-        if (timerValue === currentTime) {
-          performReserva()
-          clearInterval(interval)
-        }
-      }, 1000)
 
-      return () => clearInterval(interval)
-    }
-  }, [alarmActive, timerValue])
+    const interval = setInterval(() => {
+      const currentTime = moment()
+        .tz('America/Argentina/Buenos_Aires')
+        .format('HH:mm:ss')
+      setCurrentTime(currentTime)
+      if (alarmActive && timerValue === currentTime) {
+        performReserva()
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+
+  }, [timerValue, alarmActive])
 
   async function performReserva() {
     setAlarmActive(false)
@@ -70,8 +74,8 @@ export default function ReservaButton() {
           email: postData.email,
           password: postData.password,
           dniInvitado: postData.dniInvitado,
-          dia: postData.dia,
-          cancha: postData.cancha,
+          dia: dia,
+          cancha: cancha,
           smsCode: postData.codeVerification,
           hora: horarios,
         }),
@@ -99,21 +103,19 @@ export default function ReservaButton() {
     ) {
       return setMessage(' Rellena la información del usuario')
     }
-    if (postData.dia === undefined) {
-      return setMessage(' Elige un dia para reservar')
-    }
     if (horarios.length < 1) {
       return setMessage(' Selecciona al menos un horario')
     }
     if (hasAlarm) {
       setAlarmActive(true)
     } else {
+      setMessage('')
       performReserva()
     }
   }
 
   return (
-    <div className={` h-max w-full md:w-80 flex items-start flex-col gap-10`}>
+    <div className={` h-max w-full md:w-[22em] flex items-start flex-col gap-10`}>
       <Title>
         TejaB
         <svg
@@ -135,14 +137,13 @@ export default function ReservaButton() {
         t
       </Title>
       <div
-        className={`${
-          (loading && 'pointer-events-none sepia') ||
+        className={`${(loading && 'pointer-events-none sepia') ||
           (alarmActive && 'pointer-events-none grayscale')
-        } px-4 lg:px-0 duration-300   h-max flex items-start flex-col gap-10`}
+          } px-4 lg:px-0 duration-300   h-max flex items-start flex-col gap-10`}
       >
         <Users setPostData={setPostData} postData={postData} />
         <Court setPostData={setPostData}></Court>
-        <ChooseDay postData={postData} setPostData={setPostData} />
+        <ChooseDay />
         <ChooseTime
           setHorarios={setHorarios}
           handleHorario={handleHorario}
@@ -168,15 +169,21 @@ export default function ReservaButton() {
             Desactivar alarma
           </button>
         )}
+        <p
+          className='py-2 backdrop-blur-lg  fixed bottom-0 w-full left-0  text-white text-center
+        '
+        >
+          {currentTime}
+        </p>
         {message && (
-          <p className='bg-red-950 p-2 rounded-lg text-white'>{message}</p>
+          <p className=' bg-red-950 p-2 rounded-lg text-white'>{message}</p>
         )}
       </div>
 
       {loading && <LoadingCircle></LoadingCircle>}
 
       {logs.length > 0 && <LogsLayout logs={logs}></LogsLayout>}
-      <p className='text-violet-200 text-center w-full'>Made with 💜 by paku</p>
+      <p className='text-violet-200 opacity-50 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )
 }
