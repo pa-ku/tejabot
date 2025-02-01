@@ -3,28 +3,36 @@ import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 import chromium from '@sparticuz/chromium'
 import { NextResponse } from 'next/server'
+import path from 'path'
+import fs from 'fs'
 
 export async function POST(req) {
   let browser
-
   let logs = []
 
-  function addLog(message) {
+  const addLog = (message) => {
     logs.push(message)
     console.log(message)
   }
 
   try {
-    const requestBody = await req.json()
-    const { email, password, dniInvitado, dia, cancha, hora, smsCode } =
-      requestBody
-
+    const {
+      email,
+      password,
+      dniInvitado,
+      dia,
+      cancha,
+      hora,
+      targetTime,
+      hasAlarm,
+    } = await req.json()
     const isDevelopment = process.env.NODE_ENV === 'development'
 
+    // Lanzamos el browser según ambiente
     if (isDevelopment) {
       browser = await puppeteer.launch({
         headless: false,
-        slowMo: 2,
+        slowMo: 1,
       })
     } else {
       browser = await puppeteerCore.launch({
@@ -36,7 +44,6 @@ export async function POST(req) {
     }
 
     const page = await browser.newPage()
-
     try {
       await page.goto('https://reservar.serviciosmerlo.online/login')
     } catch (err) {
@@ -45,92 +52,64 @@ export async function POST(req) {
       )
     }
 
+    // Funciones
     async function login(email, password) {
       try {
         addLog('🔒 Logeando...')
         await page.type('input[id="inputEmail"]', email)
         await page.type('input[id="inputPassword"]', password)
         await page.click('button[class="btn btn-primary block full-width m-b"]')
-
-        addLog('✅ Login')
+        addLog('✅ Login exitoso')
       } catch (err) {
-        addLog('❌ No se pudo iniciar sesión...')
+        addLog('❌ No se pudo iniciar sesión')
         throw new Error('No se pudo iniciar sesión: ' + err.message)
-      }
-    }
-
-    async function chooseDay(dia) {
-      try {
-        addLog('🔍 Buscando el dia...')
-        const daySelector = `#li-dia-${dia} a`
-        await page.waitForSelector(daySelector)
-        await page.click(daySelector)
-        addLog('✅ Dia elegido')
-      } catch (err) {
-        addLog(`❌ No se encontro el dia elegido`)
-        throw new Error('No se pudo seleccionar el día')
       }
     }
 
     async function checkReservation() {
       addLog('Verificando si ya hay una reserva...')
-      const checkAlreadyReserve = await page
-        .waitForSelector('div[class="modal inmodal in"]', {
-          timeout: 1500,
-        })
+      const alreadyReserved = await page
+        .waitForSelector('div[class="modal inmodal in"]', { timeout: 1500 })
         .catch(() => null)
-      if (checkAlreadyReserve) {
-        return true
-      } else {
-        return false
-      }
+      return !!alreadyReserved
     }
 
     async function checkAvaliableTimes(dia, cancha) {
       let horarioEncontrado = false
       const canchas = cancha === 3 ? [1, 2] : [cancha]
       addLog('🔍 Buscando el horario...')
-      for (const cancha of canchas) {
+      await new Promise((r) => setTimeout(r, 1000))
+      for (const canchaActual of canchas) {
         for (const horario of hora) {
           try {
-            const horarioSelector = `#grid-predios-${dia} > div:nth-child(${cancha}) > div > ul`
+            const horarioSelector = `#grid-predios-${dia} > div:nth-child(${canchaActual}) > div > ul`
             await page.waitForSelector(horarioSelector, { timeout: 1000 })
-
             const listaHorarios = await page.$$(horarioSelector + ' > li')
-
-            for (let hora of listaHorarios) {
-              const text = await page.evaluate((el) => el.textContent, hora)
+            for (let li of listaHorarios) {
+              const text = await page.evaluate((el) => el.textContent, li)
               if (text.includes(horario)) {
-                const aTag = await hora.$('a.alert-link')
+                const aTag = await li.$('a.alert-link')
                 if (aTag) {
                   await aTag.click()
-                  addLog('✅ Horario encontrado')
+                  addLog(`✅ Horario ${horario} encontrado`)
                   horarioEncontrado = true
                   break
                 }
               }
             }
-
-            if (horarioEncontrado) {
-              addLog(`✅ ${horario}`)
-              break
-            } else {
-              addLog(`❌ ${horario}`)
-            }
+            if (horarioEncontrado) break
+            else
+              addLog(
+                `❌ Horario ${horario} no disponible en cancha ${canchaActual}`
+              )
           } catch (error) {
-            addLog(
-              `❌ Error al buscar el horario: ${horario}, intentando con el siguiente...`
-            )
+            addLog(`❌ Error al buscar el horario ${horario}: ${error.message}`)
           }
         }
-
-        if (horarioEncontrado) {
-          break
-        }
+        if (horarioEncontrado) break
       }
 
       if (!horarioEncontrado) {
-        addLog('❌ No se encontro el horario')
         throw new Error(
           'Ninguno de los horarios elegidos se encuentra disponible'
         )
@@ -142,24 +121,19 @@ export async function POST(req) {
         addLog('Llenando el formulario...')
         await page.click('input[id="input-dni"]')
         await page.type('input[id="input-dni"]', dniInvitado)
-
         const userAlreadyUsed = await page.$('div[id="alert-invitado"]')
         await new Promise((r) => setTimeout(r, 1000))
         if (userAlreadyUsed) {
-          const isHidden = await page.evaluate((element) => {
-            return window.getComputedStyle(element).display === 'none'
-          }, userAlreadyUsed)
-
-          if (isHidden) {
-            addLog('✅ Persona invitada')
-            addLog('✅ Confirmando la reserva...')
-          } else {
+          const isHidden = await page.evaluate(
+            (el) => window.getComputedStyle(el).display === 'none',
+            userAlreadyUsed
+          )
+          if (!isHidden) {
             addLog('❌ La persona ya fue invitada esta semana')
             throw new Error('El usuario ya fue invitado por otra persona')
           }
-        } else {
-          addLog('✅ Persona invitada')
         }
+        addLog('✅ Persona invitada')
       } catch (err) {
         addLog('❌ No se pudo llenar el formulario')
         throw new Error('Error al llenar el formulario: ' + err.message)
@@ -167,107 +141,180 @@ export async function POST(req) {
     }
 
     async function readReservation() {
-      const reserva = await page.evaluate(() => {
-        const fecha = document
-          .querySelector('.modal-body b:nth-of-type(1)')
-          .nextSibling.textContent.trim()
-        const horario = document
-          .querySelector('.modal-body b:nth-of-type(2)')
-          .nextSibling.textContent.trim()
-
-        const cancha = document
-          .querySelector('.modal-body b:nth-of-type(4)')
-          .nextSibling.textContent.trim()
-
-        return {
-          fecha,
-          horario,
-          cancha,
-        }
-      })
-      addLog('✅ Ya tenes una reserva')
-      addLog(`Fecha: ${reserva.fecha}`)
-      addLog(`Horario: ${reserva.horario}`)
-      addLog(`Cancha: ${reserva.cancha}`)
+      try {
+        const reserva = await page.evaluate(() => {
+          const fecha = document
+            .querySelector('.modal-body b:nth-of-type(1)')
+            .nextSibling.textContent.trim()
+          const horario = document
+            .querySelector('.modal-body b:nth-of-type(2)')
+            .nextSibling.textContent.trim()
+          const cancha = document
+            .querySelector('.modal-body b:nth-of-type(4)')
+            .nextSibling.textContent.trim()
+          return { fecha, horario, cancha }
+        })
+        addLog('✅ Ya tenés una reserva')
+        addLog(`👑 ${reserva.fecha} / ${reserva.horario} / ${reserva.cancha}`)
+      } catch (error) {
+        throw new Error('Error al leer la reserva: ' + error.message)
+      } finally {
+        await takeScreenshot({ page, email, addLog })
+      }
     }
 
     async function checkResult() {
       try {
+        await new Promise((r) => setTimeout(r, 2000))
         addLog('Leyendo el popup...')
         const paragraphText = await page.$eval(
           'p[style="display: block;"]',
           (el) => el.textContent
         )
         addLog(`❌ Error: ${paragraphText}`)
-        throw new Error(paragraphText)
+        await takeScreenshot({ page, email, addLog })
       } catch (error) {
-        throw new Error(`Error al comprobar el resultado: ${error}`)
+        throw new Error('Error al comprobar el resultado: ' + error.message)
       }
-    }
-
-    async function validateSms() {
-      addLog('📱 Validando sms...')
-      await page.click('input[id="validate_sms_validation_code"]')
-      await page.type('input[id="validate_sms_validation_code"]', smsCode)
-      await page.click('button[id="validate_sms_guardar"]')
     }
 
     async function makeReservation() {
       try {
         await confirmAlert(page)
-        await new Promise((r) => setTimeout(r, 1000))
         await page.click('button[id="btn-id-persona"]')
         await page.click('button[id="btn-id-reserva"]')
-        await new Promise((r) => setTimeout(r, 1000))
-        addLog('✅ Formulario Llenado')
+        addLog('✅ Formulario llenado')
       } catch (err) {
-        addLog('❌ Error al rellenar el formolario')
+        addLog('❌ Error al rellenar el formulario')
         throw new Error('Error al realizar la reserva: ' + err.message)
       }
     }
-    await login(email, password)
-    const hasReservation = await checkReservation()
 
-    if (hasReservation) {
+    // Ejecutamos el login primero
+    await login(email, password)
+    if (await checkReservation()) {
       await readReservation()
-      throw new Error('Ya tenes una reserva realizada')
+      throw new Error('Ya tenés una reserva realizada')
     }
-    addLog('✅ No tiene una reserva realizada...')
+    addLog('✅ No tenés reserva previa')
+
+    await navigateToTheDayMenu({ page })
+    await checkDayTimer({ targetTime, page, hasAlarm, dia, addLog })
+    await checkAvaliableTimes(dia, cancha)
+    await fillForm(dniInvitado)
+    await makeReservation()
+    await checkResult()
+
+    return NextResponse.json({ message: 'Ejecutado con exito', logs })
+  } catch (error) {
+    return NextResponse.json({
+      error: error,
+      message: 'Hay un problema',
+      logs,
+    })
+  } finally {
+    if (browser) await browser.close()
+  }
+}
+
+async function navigateToTheDayMenu({ page }) {
+  try {
     await page.waitForSelector('a[href="#"]')
     await page.click('a[href="#"]')
     await page.waitForSelector(
       '#side-menu > li:nth-child(4) > ul > li:first-child > a'
     )
     await page.click('#side-menu > li:nth-child(4) > ul > li:first-child > a')
-
-    await chooseDay(dia)
-    await checkAvaliableTimes(dia, cancha)
-    await fillForm(dniInvitado)
-    await makeReservation()
-    /*   await validateSms() */
-
-    await new Promise((r) => setTimeout(r, 2500))
-    const checkPopUp = await page.$(
-      'div[class="sweet-alert showSweetAlert visible"]'
-    )
-    console.log(checkPopUp);
-
-
-    if (checkPopUp) await checkResult()
-    else {
-      await readReservation()
-      addLog(`'Reserva realizada con exito! a padelear 💪',`)
-    }
-
-    return NextResponse.json({ message: 'Done', logs: logs })
   } catch (error) {
-    return NextResponse.json({
-      error: 'Error al realizar la reserva',
-      logs: logs,
-    })
-  } finally {
-    if (browser) {
-      await browser.close()
-    }
+    throw new Error('Error al navegar al menú del día: ' + error.message)
   }
+}
+
+async function checkDayTimer({ targetTime, page, hasAlarm, dia, addLog }) {
+  try {
+    if (!hasAlarm) {
+      await chooseDay({ page, dia, addLog })
+    } else {
+      // Calculamos el delay para ejecutar chooseDay a las 6 AM
+      const now = new Date()
+      const dayTimer = new Date(now)
+      const [hour, minute] = targetTime.split(':').map(Number)
+      dayTimer.setHours(hour, minute, 0, 0)
+      if (now >= dayTimer) {
+        // Si ya pasó la 23:14 de hoy, programamos para mañana
+        dayTimer.setDate(dayTimer.getDate() + 1)
+      }
+      const delay = dayTimer.getTime() - now.getTime()
+      addLog(
+        `⏱️ Esperando ${Math.ceil(
+          delay / 1000
+        )
+        } segundos para ejecutar chooseDay a las 23: 14`
+      )
+
+      await new Promise((resolve) => {
+        setTimeout(async () => {
+          try {
+            await page.reload()
+
+            await chooseDay({ page, dia, addLog })
+            resolve()
+          } catch (error) {
+            // Si falla en chooseDay, rechaza el timer
+            resolve() // o se podría hacer un reject, según lo que necesites
+          }
+        }, delay)
+      })
+    }
+  } catch (error) {
+    throw new Error('Error al esperar el timer: ' + error.message)
+  }
+}
+
+async function chooseDay({ page, dia, addLog }) {
+  try {
+    addLog('🔍 Buscando el día...')
+    const daySelector = `#li-dia-${dia} a`
+    await page.waitForSelector(daySelector, { timeout: 2000 })
+    await page.click(daySelector)
+    addLog('✅ Día elegido')
+  } catch (err) {
+    addLog('❌ No se encontró el día elegido')
+    throw new Error('No se pudo seleccionar el día: ' + err.message)
+  }
+}
+
+async function takeScreenshot({ page, email, addLog }) {
+  try {
+    const desktopPath = path.join(require('os').homedir(), 'Desktop')
+    const imagesFolder = path.join(desktopPath, 'tejabot')
+
+    // Crear la carpeta si no existe
+    if (!fs.existsSync(imagesFolder)) {
+      fs.mkdirSync(imagesFolder, { recursive: true })
+    }
+
+    const timestamp = new Date()
+      .toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      })
+      .replace(/\//g, "-").replace(/:/g, "-").replace(",", "");
+
+    const screenshotPath = path.join(imagesFolder, `${email}_${timestamp}.png`)
+    await page.screenshot({ path: screenshotPath })
+    addLog(`📸 Captura guardada en el escritorio`)
+    console.log(`📸 Captura guardada en: ${screenshotPath}`)
+  } catch (error) {
+    throw new Error('Error al tomar la captura de pantalla: ' + error)
+  }
+}
+
+
+async function wait(time) {
+  await new Promise((r) => setTimeout(r, time))
 }

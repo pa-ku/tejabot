@@ -4,7 +4,7 @@ import { TimeContext } from '@/context/TimeContext'
 import { useContext } from 'react'
 
 export default function Timer() {
-  const { setHasAlarm, setTimerValue, hasAlarm } = useContext(TimeContext)
+  const { setHasAlarm, setTimerValue, hasAlarm, timerValue, targetTime, setTargetTime } = useContext(TimeContext)
 
   const clockSvg = (
     <svg
@@ -29,8 +29,7 @@ export default function Timer() {
       <section className='flex flex-col '>
         <h2>Timer</h2>
         <p className='description'>
-          Reservara a la hora especificada, si se desactiva reservara
-          inmediatamente
+          El tiempo en que iniciara la preparación para reservar
         </p>
 
         <div className='h-16 flex items-center gap-3'>
@@ -47,9 +46,27 @@ export default function Timer() {
               <input
                 className=' bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
                 type='time'
-                defaultValue={'05:59:54'} // tiene 3 segundos de desfaz
+                defaultValue={timerValue}
                 step="2"
                 onChange={(e) => setTimerValue(e.target.value)}
+              />
+            </>
+          )}
+        </div>
+        <h2>Timer de reserva</h2>
+
+        <p className='description'>
+          La hora a la que ejecutara la reserva
+        </p>
+        <div className='h-16 flex items-center gap-3'>
+
+          {hasAlarm && (
+            <>
+              <input
+                className=' bg-[var(--primary-500)] px-4 py-2 rounded-xl text-white'
+                type='time'
+                defaultValue={targetTime}
+                onChange={(e) => setTargetTime(e.target.value)}
               />
             </>
           )}

@@ -24,4 +24,24 @@ export const dataUsers = [
     password: 'tejadito123',
     dniInvitado: '30398755',
   },
+  {
+    email: 'eleden1926@outlook.es',
+    password: 'tejadito123',
+    dniInvitado: '40398333',
+  },
+  {
+    email: 'cohev21486@kuandika.com',
+    password: 'tejadito123',
+    dniInvitado: '36578215',
+  },
+  {
+    email: 'xolovo5892@gufutu.com',
+    password: 'tejadito123',
+    dniInvitado: '36578214',
+  },
+  {
+    email: 'xavoc13053@numerobo.com',
+    password: 'tejadito123',
+    dniInvitado: '36578214',
+  },
 ]

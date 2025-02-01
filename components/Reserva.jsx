@@ -15,7 +15,7 @@ import moment from 'moment-timezone'
 import { useReserveContext } from '@/context/ReserveContext'
 
 export default function ReservaButton() {
-  const { hasAlarm, timerValue, setAlarmActive, alarmActive } =
+  const { hasAlarm, timerValue, setAlarmActive, targetTime, alarmActive } =
     useContext(TimeContext)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -23,7 +23,6 @@ export default function ReservaButton() {
     email: '',
     password: '',
     dniInvitado: '',
-    codeVerification: '',
   })
   const { dia, cancha } = useReserveContext()
   const [horarios, setHorarios] = useState(['19:00 - 20:00'])
@@ -76,8 +75,9 @@ export default function ReservaButton() {
           dniInvitado: postData.dniInvitado,
           dia: dia,
           cancha: cancha,
-          smsCode: postData.codeVerification,
           hora: horarios,
+          targetTime: targetTime,
+          hasAlarm: hasAlarm
         }),
       })
 
@@ -116,6 +116,12 @@ export default function ReservaButton() {
 
   return (
     <div className={` h-max w-full md:w-[22em] flex items-start flex-col gap-10`}>
+      <p
+        className='py-1 backdrop-blur-lg text-white font-bold drop-shadow-xl shadow- z-50  font-mono fixed bottom-0 h-max text-xl w-full left-0 top-0  text-center
+        '
+      >
+        {currentTime}
+      </p>
       <Title>
         TejaB
         <svg
@@ -141,7 +147,7 @@ export default function ReservaButton() {
           (alarmActive && 'pointer-events-none grayscale')
           } px-4 lg:px-0 duration-300   h-max flex items-start flex-col gap-10`}
       >
-        <Users setPostData={setPostData} postData={postData} />
+
         <Court setPostData={setPostData}></Court>
         <ChooseDay />
         <ChooseTime
@@ -149,7 +155,7 @@ export default function ReservaButton() {
           handleHorario={handleHorario}
           horarios={horarios}
         />
-
+        <Users setPostData={setPostData} postData={postData} />
         <Timer></Timer>
       </div>
       <div className='w-full px-4 space-y-2'>
@@ -169,12 +175,7 @@ export default function ReservaButton() {
             Desactivar alarma
           </button>
         )}
-        <p
-          className='py-2 backdrop-blur-lg  fixed bottom-0 w-full left-0  text-white text-center
-        '
-        >
-          {currentTime}
-        </p>
+
         {message && (
           <p className=' bg-red-950 p-2 rounded-lg text-white'>{message}</p>
         )}
@@ -182,7 +183,13 @@ export default function ReservaButton() {
 
       {loading && <LoadingCircle></LoadingCircle>}
 
-      {logs.length > 0 && <LogsLayout logs={logs}></LogsLayout>}
+      {logs.length > 0 && <div className='w-full space-y-2'>
+        <button className=' text-pink-400 rounded-lg ' onClick={() => setLogs([])}>Clear logs</button>
+        <LogsLayout logs={logs}></LogsLayout>
+      </div>
+      }
+
+
       <p className='text-violet-200 opacity-50 text-center w-full'>Made with 💜 by paku</p>
     </div>
   )

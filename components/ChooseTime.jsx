@@ -43,11 +43,11 @@ export default function ChooseTime({ horarios, handleHorario, setHorarios }) {
         </div>
 
 
-        <div className='pt-2 flex justify-center w-full flex-wrap gap-1 '>
+        <div className='pt-2 grid grid-cols-3 justify-center w-full flex-wrap gap-1 '>
           {horarios.map((time) => (
             <p
               key={time}
-              className='bg-violet-950 border-violet-800 border-2 text-violet-400  p-1 rounded-md text-sm '
+              className=' text-violet-400  p-1 rounded-md text-sm '
             >
               {time}
             </p>

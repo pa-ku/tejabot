@@ -4,7 +4,7 @@ export default function Button({ color, children, onClick }) {
       <button
         className={`${
           color ? color : 'bg-purple-900'
-        } w-full text-white rounded-lg hover:brightness-110  py-2`}
+        } w-full text-sm text-white rounded-lg hover:brightness-110  py-2`}
         onClick={onClick}
       >
         {children}

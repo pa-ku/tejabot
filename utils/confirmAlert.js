@@ -1,6 +1,6 @@
 export async function confirmAlert(page) {
+  
   let dialogHandled = false; // Variable de control para saber si ya se manejó un diálogo
-
   const handleDialog = async (dialog) => {
     if (dialogHandled) return; // Si ya se manejó un diálogo, no hacer nada
     dialogHandled = true; // Marcar que ya se manejó un diálogo
