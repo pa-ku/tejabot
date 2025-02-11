@@ -78,7 +78,7 @@ export async function POST(req) {
       let horarioEncontrado = false
       const canchas = cancha === 3 ? [1, 2] : [cancha]
       addLog('🔍 Buscando el horario...')
-      await new Promise((r) => setTimeout(r, 1000))
+      await wait(1000)
       for (const canchaActual of canchas) {
         for (const horario of hora) {
           try {
@@ -122,7 +122,7 @@ export async function POST(req) {
         await page.click('input[id="input-dni"]')
         await page.type('input[id="input-dni"]', dniInvitado)
         const userAlreadyUsed = await page.$('div[id="alert-invitado"]')
-        await new Promise((r) => setTimeout(r, 1000))
+        await wait(1000)
         if (userAlreadyUsed) {
           const isHidden = await page.evaluate(
             (el) => window.getComputedStyle(el).display === 'none',
@@ -248,8 +248,7 @@ async function checkDayTimer({ targetTime, page, hasAlarm, dia, addLog }) {
       addLog(
         `⏱️ Esperando ${Math.ceil(
           delay / 1000
-        )
-        } segundos para ejecutar chooseDay a las 23: 14`
+        )} segundos para ejecutar chooseDay a las 23: 14`
       )
 
       await new Promise((resolve) => {
@@ -275,7 +274,7 @@ async function chooseDay({ page, dia, addLog }) {
   try {
     addLog('🔍 Buscando el día...')
     const daySelector = `#li-dia-${dia} a`
-    await page.waitForSelector(daySelector, { timeout: 2000 })
+    await page.waitForSelector(daySelector, { timeout: 5000 })
     await page.click(daySelector)
     addLog('✅ Día elegido')
   } catch (err) {
@@ -303,7 +302,9 @@ async function takeScreenshot({ page, email, addLog }) {
         second: '2-digit',
         hour12: false,
       })
-      .replace(/\//g, "-").replace(/:/g, "-").replace(",", "");
+      .replace(/\//g, '-')
+      .replace(/:/g, '-')
+      .replace(',', '')
 
     const screenshotPath = path.join(imagesFolder, `${email}_${timestamp}.png`)
     await page.screenshot({ path: screenshotPath })
@@ -313,7 +314,6 @@ async function takeScreenshot({ page, email, addLog }) {
     throw new Error('Error al tomar la captura de pantalla: ' + error)
   }
 }
-
 
 async function wait(time) {
   await new Promise((r) => setTimeout(r, time))

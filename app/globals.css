@@ -5,7 +5,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+
   margin: 0;
 }
 
@@ -64,38 +64,16 @@ h2 {
 @keyframes slick {
   0% {
     --color-1: #e0218c;
-    --color-2: #eaa221;
+    --color-2: #dd9cfc;
   }
   50% {
-    --color-1: #eaa221;
+    --color-1: #dd9cfc;
     --color-2: #e0218c;
   }
   100% {
     --color-1: #e0218c;
-    --color-2: #eaa221;
+    --color-2: #dd9cfc;
   }
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  /* remove TouchMobile */
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-tap-highlight-color: transparent;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  /* remove TouchMobile */
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-tap-highlight-color: transparent;
 }
 
 @keyframes rotate {
@@ -138,7 +116,7 @@ h2 {
   }
 
   50% {
-    border: 5px solid #eaa221;
+    border: 5px solid #b310ff;
     border-top-color: #333;
     border-left-color: #333;
   }

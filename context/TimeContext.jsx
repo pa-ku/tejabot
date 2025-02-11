@@ -4,11 +4,11 @@ import { createContext, useState } from 'react'
 export const TimeContext = createContext()
 
 export function TimeProvider({ children }) {
-  const [timerValue, setTimerValue] = useState('05:59:40')
+  const [timerValue, setTimerValue] = useState('05:59:35')
   const [hasAlarm, setHasAlarm] = useState(true)
   const [alarmActive, setAlarmActive] = useState(false)
   const [timeMessage, setTimeMessage] = useState('')
-  const [targetTime, setTargetTime] = useState('06:00')
+  const [targetTime, setTargetTime] = useState('06:01')
 
   return (
     <TimeContext.Provider
